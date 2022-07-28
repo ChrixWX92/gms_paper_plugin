@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static com.gms.paper.forms.PetsForm.*;
+import static com.gms.paper.forms.PuzzleForm.*;
 
 public class Pets extends Command {
 
