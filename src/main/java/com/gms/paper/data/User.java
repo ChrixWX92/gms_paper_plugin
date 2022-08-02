@@ -1,9 +1,7 @@
 package com.gms.paper.data;
 
+import org.bukkit.World;
 import org.bukkit.entity.Player;
-import cn.nukkit.inventory.PlayerInventory;
-import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
 import com.gms.paper.Main;
 import com.gms.paper.commands.Overrides;
 import com.gms.paper.interact.InteractionHandler;
@@ -79,13 +77,13 @@ public class User {
                             File[] levelPaths = sessionDir.listFiles();
 
                             if (levelPaths != null && levelPaths.length > 0) {
-                                for (var levelPath : levelPaths) {
+                                for (File levelPath : levelPaths) {
                                     try {
                                         String levelPathDir = Helper.pathToDir(levelPath.toString());
-                                        Level level = Main.s_plugin.getServer().getWorldByName(levelPathDir);
-                                        if (level != null) {
-                                            Log.debug(String.format("Unloading level: %s", levelPath));
-                                            level.unload();
+                                        World world = Main.s_plugin.getServer().getWorldByName(levelPathDir);
+                                        if (world != null) {
+                                            Log.debug(String.format("Unloading world: %s", levelPath));
+                                            world.unload();
                                         }
                                     }
                                     catch (Exception e) {
@@ -301,7 +299,7 @@ public class User {
         setCurrentUser(null);
 
         try {
-            String baseDir = Main.s_plugin.getServer().getDataPath();
+            String baseDir = Main.s_plugin.getDataFolder().getPath();
             User user = (new Gson()).fromJson(Files.readString(Paths.get(baseDir, Helper.s_devDirName, "user.json")), User.class);
 
             /// Load the profile

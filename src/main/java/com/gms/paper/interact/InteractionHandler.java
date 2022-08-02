@@ -1,8 +1,13 @@
 package com.gms.paper.interact;
 
 import com.gms.paper.util.*;
+import com.gms.paper.util.blocks.GSSign;
+import com.gms.paper.util.world.GSWorld;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import com.gms.paper.PlayerInstance;
 import com.gms.paper.data.*;
@@ -17,6 +22,7 @@ import com.gms.paper.interact.treasureHunt.THA_InteractionHandler;
 import com.gms.paper.interact.treasureHunt.THTP_InteractionHandler;
 import com.gms.paper.interact.puzzles.PuzzleType;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -147,8 +153,9 @@ public class InteractionHandler {
     public static String[] getSignInfo(World world, GamePosition signLocation) {
         try {
 
+            GSWorld gsWorld = new GSWorld(world);
 
-           BlockEntitySign blockEntitySign = (BlockEntitySign) world.getBlockEntity(signLocation.round());
+            GSSign blockEntitySign = world.getBlockEntity(signLocation.round());
 
             if (blockEntitySign == null) {
                 GamePosition signLocMCQ = new GamePosition(signLocation, new Location(0, -1, 0), false); // sign can be 3 blocks down for MCQ
@@ -206,14 +213,14 @@ public class InteractionHandler {
         return pb;
     }
 
-    public static boolean populateSign(Level level, String text, Vector3D signLocation) {
-        return populateSign(level, text, signLocation, false);
+    public static boolean populateSign(World world, String text, Vector3D signLocation) {
+        return populateSign(world, text, signLocation, false);
     }
 
-    public static boolean populateSign(Level level, String text, Vector3D signLocation, boolean clearText) {
+    public static boolean populateSign(World world, String text, Vector3D signLocation, boolean clearText) {
         //Make this so it lights up more than one line
         //if length of string is more than 13 or 14 characters
-        if (!(level.getBlockEntity(signLocation) instanceof BlockEntitySign)) {
+        if (!(world.getBlockEntity(signLocation) instanceof BlockEntitySign)) {
             return false;
         }
         String cleanText = "";
@@ -221,7 +228,7 @@ public class InteractionHandler {
         TextCleaner tc = new TextCleaner(text);
         cleanText = tc.getCleanedLatin();
 
-        BlockEntitySign blockEntitySign = (BlockEntitySign) level.getBlockEntity(signLocation);
+        BlockEntitySign blockEntitySign = (BlockEntitySign) world.getBlockEntity(signLocation);
         String[] signText = blockEntitySign.getText();
         if (clearText) {
             for (int i = 0; i < signText.length; i++) {
@@ -235,8 +242,8 @@ public class InteractionHandler {
         return blockEntitySign.setText(signText);
     }
 
-    public static boolean populateItemFrame(Level level, String filename, Vector3D frameLocation) {
-        if (!(level.getBlockEntity(frameLocation) instanceof BlockEntityItemFrame)) {
+    public static boolean populateItemFrame(World world, String filename, Vector3D frameLocation) {
+        if (!(world.getBlockEntity(frameLocation) instanceof BlockEntityItemFrame)) {
             return false;
         }
 
@@ -256,7 +263,7 @@ public class InteractionHandler {
         }
         map.setImage(image);
 
-        BlockEntityItemFrame itemFrameEntity = (BlockEntityItemFrame) level.getBlockEntity(frameLocation);
+        BlockEntityItemFrame itemFrameEntity = (BlockEntityItemFrame) world.getBlockEntity(frameLocation);
         itemFrameEntity.setItem(map);
         return true;
     }
@@ -268,7 +275,7 @@ public class InteractionHandler {
     protected Block buttonBlock;
     protected GamePosition blockLoc;
     protected GamePosition signLoc;
-    protected Level level;
+    protected World world;
     protected Block signBlock;
     protected String buttonType;
     protected String[] signText;
@@ -352,10 +359,10 @@ public class InteractionHandler {
         buttonBlock = event.getBlock();
         blockLoc = new GamePosition(null, buttonBlock.getLocation(), true);
         signLoc = new GamePosition(blockLoc, new Location(0, -2, 0), false); /// buttonBlock.getLocation().add(new Location(0, -2, 0)); //info sign
-        level = buttonBlock.getLocation().level;
-        signBlock = level.getBlock(signLoc);
+        world = buttonBlock.getLocation().level;
+        signBlock = world.getBlock(signLoc);
 
-        signText = getSignInfo(level, signLoc);
+        signText = getSignInfo(world, signLoc);
         buttonType = signText[0].split(",")[0]; //Where the button/activity type is stored
 
         idInfo = new QuestionIdInfo(signText[1].trim());
@@ -380,7 +387,7 @@ public class InteractionHandler {
     }
 
     public boolean isCorrectAnswer() {
-        Block answerBlock = level.getBlock(signLoc.add(s_answerBlockOffset));
+        Block answerBlock = world.getBlock(signLoc.add(s_answerBlockOffset));
         return answerBlock.getName().equals(s_answerBlockName);
     }
 
@@ -403,7 +410,7 @@ public class InteractionHandler {
         }
 
         //get correct hologram offset based on sign facing position
-        BlockFace facing =  EntityDirectionHelper.getSignFacingDirection((BlockEntitySign) level.getBlockEntity(questionLocation));
+        BlockFace facing =  EntityDirectionHelper.getSignFacingDirection((BlockEntitySign) world.getBlockEntity(questionLocation));
         Vector3D holoLocation = questionLocation;
         switch(facing){
             case NORTH -> holoLocation = questionLocation.add(0.5, 1, 1);
@@ -412,7 +419,7 @@ public class InteractionHandler {
             case WEST -> holoLocation = questionLocation.add(1, 1, 0.5);
         }
 
-        HologramEntity progressHologramEntity = HologramHelper.getHologramEntity(level, "Progress");
+        HologramEntity progressHologramEntity = HologramHelper.getHologramEntity(world, "Progress");
         var prevLocation = HologramHelper.getHologramLocation(progressHologramEntity);
 
         //if previous hologram is not in the same location as the question location then close the hologram
@@ -433,7 +440,7 @@ public class InteractionHandler {
     }
 
     public void removeProgressHologram(){
-        HologramEntity progressHologramEntity = HologramHelper.getHologramEntity(level, "Progress");
+        HologramEntity progressHologramEntity = HologramHelper.getHologramEntity(world, "Progress");
         if(progressHologramEntity != null) {
             progressHologramEntity.closeHologram();
         }
@@ -490,7 +497,8 @@ public class InteractionHandler {
 
     private void saveCheckpoint(){
         if (User.getCurrent() != null && User.getCurrent().getState() != null) {
-            User.getCurrent().getState().updatePos(new Vector3(player.x, player.y, player.z), (float)player.headYaw);
+            @NotNull Location loc = player.getLocation();
+            User.getCurrent().getState().updatePos(new Vector3D(loc.getX(), loc.getY(), loc.getZ()), (float)loc.getYaw());
         }
     }
 }

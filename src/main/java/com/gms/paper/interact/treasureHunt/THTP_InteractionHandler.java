@@ -32,11 +32,11 @@ public class THTP_InteractionHandler extends StaticWordList_InteractionHandler {
 
         do {
             var nextSignLoc = new GamePosition(blockLoc, new Location(0, ycoord, 0), false); /// buttonBlock.getLocation().add(new Location(0, -2, 0)); //info sign
-            var nextSignBlock = level.getBlockEntity(nextSignLoc.round());
+            var nextSignBlock = world.getBlockEntity(nextSignLoc.round());
 
             if (nextSignBlock instanceof BlockEntitySign) {
                 prevInfo = info;
-                info = getSignInfo(level, nextSignLoc);
+                info = getSignInfo(world, nextSignLoc);
 
                 if (prevInfo != null)
                     wordInfos.add(prevInfo);

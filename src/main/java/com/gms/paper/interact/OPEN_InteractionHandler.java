@@ -30,8 +30,8 @@ public class OPEN_InteractionHandler extends InteractionHandler {
 
             GamePosition startLoc = new GamePosition(signLoc, new Vector3(startX, startY, startZ));
             GamePosition endLoc = new GamePosition(signLoc, new Vector3(endX, endY, endZ));
-            level.setBlock(startLoc, new BlockAir());
-            level.setBlock(endLoc, new BlockAir());
+            world.setBlock(startLoc, new BlockAir());
+            world.setBlock(endLoc, new BlockAir());
         }
         else {
             Log.logGeneric(player, "This item costs " + cost + "profile.tickets and you only have " + profile.tickets);

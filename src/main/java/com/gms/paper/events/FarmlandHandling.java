@@ -1,4 +1,4 @@
-package com.gms.paper.interact.puzzles.listeners;
+package com.gms.paper.events;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.*;

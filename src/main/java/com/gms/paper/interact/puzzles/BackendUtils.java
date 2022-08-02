@@ -1,24 +1,23 @@
 package com.gms.paper.interact.puzzles;
 
-import cn.nukkit.Player;
-import cn.nukkit.utils.TextFormat;
-import com.gms.mc.PlayerInstance;
-import com.gms.mc.custom.sound.Chord;
-import com.gms.mc.custom.sound.ChordType;
-import com.gms.mc.custom.sound.MusicMaker;
-import com.gms.mc.custom.sound.Note;
-import com.gms.mc.data.*;
-import com.gms.mc.error.InvalidBackendQueryException;
-import com.gms.mc.interact.puzzles.maths.Arithmetic;
-import com.gms.mc.util.Helper;
-import com.gms.mc.util.Log;
+import com.gms.paper.PlayerInstance;
+import com.gms.paper.custom.sound.Chord;
+import com.gms.paper.custom.sound.ChordType;
+import com.gms.paper.custom.sound.MusicMaker;
+import com.gms.paper.custom.sound.Note;
+import com.gms.paper.data.*;
+import com.gms.paper.error.InvalidBackendQueryException;
+import com.gms.paper.interact.puzzles.maths.Arithmetic;
+import com.gms.paper.util.Helper;
+import com.gms.paper.util.Log;
+import com.gms.paper.util.TextFormat;
+import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static cn.nukkit.level.Sound.*;
-import static com.gms.mc.interact.puzzles.PuzzleType.PAIRS;
+import static com.gms.paper.interact.puzzles.PuzzleType.PAIRS;
 
 public class BackendUtils {
 
@@ -208,7 +207,7 @@ public class BackendUtils {
     public static void cleanUpEntitieswithTag(Player p, String tag) {
         var allFrames = Arithmetic.getFrames(p, tag);
         while (allFrames.size() > 0) {
-            for (var frame : allFrames) {
+            for (BlockEntityItemFrame frame : allFrames) {
                 frame.close();
                 allFrames = Arithmetic.getFrames(p, BackendUtils.getQuestionSetID());
             }

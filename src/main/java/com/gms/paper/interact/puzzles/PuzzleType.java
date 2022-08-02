@@ -12,6 +12,12 @@ import com.gms.mc.interact.puzzles.handlers.MOBGROUP_InteractionHandler;
 import com.gms.mc.interact.puzzles.handlers.PAIRS_InteractionHandler;
 import com.gms.mc.interact.puzzles.maths.*;
 import com.gms.mc.util.Log;
+import com.gms.paper.data.Course;
+import com.gms.paper.data.QuestionIdInfo;
+import com.gms.paper.data.QuestionSet;
+import com.gms.paper.util.Log;
+import com.gms.paper.util.TextFormat;
+import org.bukkit.entity.Player;
 
 import java.util.Objects;
 

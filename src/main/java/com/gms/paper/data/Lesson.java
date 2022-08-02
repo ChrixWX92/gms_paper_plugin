@@ -6,9 +6,11 @@ import com.gms.paper.Main;
 import com.gms.paper.interact.puzzles.handlers.anchors.AnchorHandler;
 import com.gms.paper.util.Helper;
 import com.gms.paper.util.Log;
+import com.gms.paper.util.Vector3D;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -120,7 +122,7 @@ public class Lesson extends GenericContent {
         return true;
     }
 
-    public QuestionSet getQuestionSet(CommandSender sender, QuestionIdInfo idInfo) {
+    public QuestionSet getQuestionSet(Player player, QuestionIdInfo idInfo) {
         QuestionSet qset = _questionSetLUT.get(idInfo.questionSetContentId);
         return qset;
 //        if (idInfo.questionSetId < 0 || idInfo.questionSetId > _questionSets.size()) {

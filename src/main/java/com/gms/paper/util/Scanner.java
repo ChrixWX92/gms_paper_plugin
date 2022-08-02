@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import cn.nukkit.Player;
+import com.gms.paper.util.blockentity.BlockEntity;
 
 public class Scanner {
 

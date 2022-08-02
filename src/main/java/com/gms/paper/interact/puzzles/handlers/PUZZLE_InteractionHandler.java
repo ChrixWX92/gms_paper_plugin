@@ -1,11 +1,10 @@
 package com.gms.paper.interact.puzzles.handlers;
 
-import cn.nukkit.event.player.PlayerInteractEvent;
-import cn.nukkit.level.Location;
-import com.gms.mc.PlayerInstance;
-import com.gms.mc.data.GamePosition;
-import com.gms.mc.error.InvalidBackendQueryException;
-import com.gms.mc.interact.InteractionHandler;
+import com.gms.paper.PlayerInstance;
+import com.gms.paper.data.GamePosition;
+import com.gms.paper.error.InvalidBackendQueryException;
+import com.gms.paper.interact.InteractionHandler;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.io.IOException;
 

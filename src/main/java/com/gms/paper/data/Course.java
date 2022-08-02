@@ -4,6 +4,7 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.math.Vector3;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import org.bukkit.entity.Player;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -55,17 +56,17 @@ public class Course extends GenericContent {
         return _lessons.get(lessonId);
     }
 
-    public Lesson getLesson(CommandSender sender, QuestionIdInfo idInfo) {
+    public Lesson getLesson(Player player, QuestionIdInfo idInfo) {
         cache();
         return _lessons.get(idInfo.lessonContentId);
     }
 
-    public QuestionSet getQuestionSet(CommandSender sender, QuestionIdInfo idInfo) {
-        Lesson lesson = getLesson(sender, idInfo);
+    public QuestionSet getQuestionSet(Player player, QuestionIdInfo idInfo) {
+        Lesson lesson = getLesson(player, idInfo);
         if (lesson == null)
             return null;
 
-        QuestionSet qset = lesson.getQuestionSet(sender, idInfo);
+        QuestionSet qset = lesson.getQuestionSet(player, idInfo);
         if (qset == null)
             return null;
 

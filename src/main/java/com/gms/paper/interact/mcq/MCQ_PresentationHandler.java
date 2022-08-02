@@ -1,6 +1,10 @@
 package com.gms.paper.interact.mcq;
 
+import com.gms.paper.util.Vector3D;
+import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
@@ -29,7 +33,7 @@ public class MCQ_PresentationHandler {
 
     private MCQ_InteractionHandler interactionHandler;
     private Player player;
-    private Level world;
+    private World world;
 
     private List<Location> displayLocations;
 
@@ -150,17 +154,17 @@ public class MCQ_PresentationHandler {
         }
 
         //sign can be on either side of a block
-        Vector3[] displayOffsets = new Vector3[]{
-                new Vector3(0, 2, 1),
-                new Vector3(0, 2, -1),
-                new Vector3(1, 2, 0),
-                new Vector3(-1, 2, 0),
+        Vector3D[] displayOffsets = new Vector3D[]{
+                new Vector3D(0, 2, 1),
+                new Vector3D(0, 2, -1),
+                new Vector3D(1, 2, 0),
+                new Vector3D(-1, 2, 0),
 
                 //question signs can be higher
-                new Vector3(0, 4, 1),
-                new Vector3(0, 4, -1),
-                new Vector3(1, 4, 0),
-                new Vector3(-1, 4, 0),
+                new Vector3D(0, 4, 1),
+                new Vector3D(0, 4, -1),
+                new Vector3D(1, 4, 0),
+                new Vector3D(-1, 4, 0),
 
         };
 
@@ -294,7 +298,7 @@ public class MCQ_PresentationHandler {
     // expecting extra prompt display to be a sign. Can expand this to item frames if needed.
     private void populateExtraPrompt(Question question, Location questionLocation) {
 
-        Vector3D extraPromptDisplayOffset = new Vector3(0, 1, 0);
+        Vector3D extraPromptDisplayOffset = new Vector3D(0, 1, 0);
 
         Location extraPromptLocation = questionLocation.subtract(extraPromptDisplayOffset);
         BlockEntity extraPromptDisplayEntity = world.getBlockEntity(extraPromptLocation);

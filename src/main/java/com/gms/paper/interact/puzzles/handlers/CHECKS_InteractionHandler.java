@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class CHECKS_InteractionHandler extends InteractionHandler {
+public class CHECKS_InteractionHandler extends PUZZLE_InteractionHandler {
     @Override
     public void handle(PlayerInteractEvent event) throws IOException, InvalidBackendQueryException {
 

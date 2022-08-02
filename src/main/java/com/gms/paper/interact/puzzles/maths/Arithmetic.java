@@ -1,32 +1,27 @@
 package com.gms.paper.interact.puzzles.maths;
 
-import cn.nukkit.Player;
-import cn.nukkit.block.*;
-import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockentity.BlockEntityItemFrame;
-import cn.nukkit.blockentity.BlockEntitySign;
-import cn.nukkit.entity.Entity;
-import cn.nukkit.item.*;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.Location;
-import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.*;
-import cn.nukkit.utils.TextFormat;
-import com.gms.mc.custom.items.ItemGSDye;
-import com.gms.mc.custom.sound.*;
-import com.gms.mc.error.InvalidFrameWriteException;
-import com.gms.mc.interact.puzzles.Puzzle;
-import com.gms.mc.interact.puzzles.PuzzleType;
-import com.gms.mc.interact.puzzles.ResetPuzzles;
-import com.gms.mc.interact.puzzles.handlers.anchors.AnchorHandler;
-import com.gms.mc.interact.puzzles.maths.threads.AddPillarObjects;
-import com.gms.mc.interact.puzzles.utils.TextToImage;
-import com.gms.mc.util.Helper;
-import com.gms.mc.util.Log;
+import com.gms.paper.custom.items.ItemGSDye;
+import com.gms.paper.custom.sound.*;
+import com.gms.paper.error.InvalidFrameWriteException;
+import com.gms.paper.interact.puzzles.Puzzle;
+import com.gms.paper.interact.puzzles.PuzzleType;
+import com.gms.paper.interact.puzzles.ResetPuzzles;
+import com.gms.paper.interact.puzzles.handlers.anchors.AnchorHandler;
+import com.gms.paper.interact.puzzles.maths.threads.AddPillarObjects;
+import com.gms.paper.interact.puzzles.utils.TextToImage;
+import com.gms.paper.util.Helper;
+import com.gms.paper.util.Log;
+import com.gms.paper.util.world.GSWorld;
 import io.netty.util.internal.ThreadLocalRandom;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.level.World;
+import net.minecraft.world.level.block.entity.TileEntity;
+import net.minecraft.world.level.block.entity.TileEntitySign;
+import net.minecraft.world.level.chunk.Chunk;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -36,20 +31,16 @@ import java.io.IOException;
 import java.util.List;
 import java.util.*;
 
-import static cn.nukkit.level.ParticleEffect.*;
-import static cn.nukkit.level.Sound.*;
-
 public class Arithmetic {
 
     public static boolean solveForX = false;
     public static String puzzleName = null;
     public static int sumX;
     public static int world = 0;
-    private static CompoundTag cachedTag;
+
+    private static NBTTagCompound cachedTag;
     private static final ArrayList<String> facings = new ArrayList<>(Arrays.asList("N", "E", "S", "W"));
     public static Puzzle currentPuzzle;
-
-    //public Arithmetic(){}
 
     /** WORLD int:
      * 0 = Lobby? (So far - nothing)
@@ -59,86 +50,22 @@ public class Arithmetic {
      * 4 = Division Zone
      */
 
-    /***
-     * For returning all BlockEntitySigns in the level.
-     * @param player The Player object
-     * @return Set<BlockEntitySign> - all the signs in the Player's level
-     */
-    public static Set<BlockEntitySign> getSigns(Player player) {
+    public static TileEntitySign findSignByText(Player player, String... lines) {
 
-        Level level = player.getLevel();
-
-        return getSigns(level);
-    }
-
-    public static Set<BlockEntitySign> getSigns(Level level) {
-
-        Map<Long, ? extends FullChunk> chunksMap = level.getChunks();
-
-        Map<Long, BlockEntity> entMap;
-        Set<BlockEntitySign> signSet = new HashSet<>();
-
-        for (var entry : chunksMap.entrySet()) {
-            entMap = entry.getValue().getBlockEntities();
-            for (var chunkEntry : entMap.entrySet()) {
-                if (chunkEntry.getValue() instanceof BlockEntitySign sign) {
-                    signSet.add(sign);
-                }
-            }
-        }
-        return signSet;
-    }
-
-    public static BlockEntitySign findSignByText(Player player, String... lines) {
-
-        Level level = player.getLevel();
-        return findSignByText(level, lines);
+        World world = player.getWorld();
+        return findSignByText(world, lines);
 
     }
 
-    /***
-     * Returns a BlockEntitySign based on its text data. Intended for individual signs, as it returns when conditions are met.
-     * @param level The Level to be scanned for signs
-     * @param lines The lines of text by which the sign will be evaluated
-     * @return The BlockEntitySign object in the player's level with text content equal to 'lines'
-     */
-    public static BlockEntitySign findSignByText(Level level, String... lines) {
-
-        Map<Long, ? extends FullChunk> chunksMap = level.getChunks();
-
-        Map<Long, BlockEntity> entMap;
-
-        for (var entry : chunksMap.entrySet()) {
-            entMap = entry.getValue().getBlockEntities();
-            var chunk = entry.getValue();
 
 
-            if (chunk.isGenerated() && chunk.isLoaded() && chunk.isPopulated()) {
-                for (var chunkEntry : entMap.entrySet()) {
-                    if (chunkEntry.getValue() instanceof BlockEntitySign sign) {
-                        if (sign.getText() != null && sign.getText().length > 0 && sign.getText()[0].equals(lines[0])) {
-                            String[] text = sign.getText();
-                            switch (lines.length) {
-                                case 4 : if (!text[3].equals(lines[3])) continue;
-                                case 3 : if (!text[2].equals(lines[2])) continue;
-                                case 2 : if (!text[1].equals(lines[1])) continue;
-                                case 1 : return sign;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    public static Set<BlockEntitySign> getBlocksWithTextForChunk(FullChunk chunk, String... lines) {
+    public static Set<TileEntitySign> getBlocksWithTextForChunk(Chunk chunk, String... lines) {
         var entMap = chunk.getBlockEntities();
-        Set<BlockEntitySign> signSet = new HashSet<>();
+        Set<TileEntitySign> signSet = new HashSet<>();
 
         if (entMap.size() > 0) {
             for (var chunkEntry : entMap.entrySet()) {
-                if (chunkEntry.getValue() instanceof BlockEntitySign sign) {
+                if (chunkEntry.getValue() instanceof TileEntitySign sign) {
                     String[] signText = sign.getText();
 
                     if (signText != null && signText[0] != null) {
@@ -148,7 +75,7 @@ public class Arithmetic {
                                 case 4 : if (!text[3].equals(lines[3])) continue;
                                 case 3 : if (!text[2].equals(lines[2])) continue;
                                 case 2 : if (!text[1].equals(lines[1])) continue;
-                                case 1 : signSet.add((BlockEntitySign) chunkEntry.getValue());
+                                case 1 : signSet.add((TileEntitySign) chunkEntry.getValue());
                             }
                         }
                     }
@@ -159,26 +86,26 @@ public class Arithmetic {
         return signSet;
     }
 
-    public static Set<BlockEntitySign> findSignsByTextInChunks(List<FullChunk> chunks, List<FullChunk> unfinished, String... lines) {
-        Set<BlockEntitySign> signSet = new HashSet<>();
+    public static Set<TileEntitySign> findSignsByTextInChunks(List<Chunk> chunks, List<Chunk> unfinished, String... lines) {
+        Set<TileEntitySign> signSet = new HashSet<>();
 
         for (var chunk : chunks) {
             boolean isUnfinished = true;
 
             if (chunk.isLoaded()) {
-                var entMap = chunk.getBlockEntities();
+                BlockState[] entMap = chunk.getTileEntities();
                 if (entMap != null) {
                     isUnfinished = false;
 
                     for (var chunkEntry : entMap.entrySet()) {
-                        if (chunkEntry.getValue() instanceof BlockEntitySign sign) {
+                        if (chunkEntry.getValue() instanceof TileEntitySign sign) {
                             if (sign.getText() != null && sign.getText()[0] != null && sign.getText()[0].equals(lines[0])) {
                                 String[] text = sign.getText();
                                 switch (lines.length) {
                                     case 4 : if (!text[3].equals(lines[3])) continue;
                                     case 3 : if (!text[2].equals(lines[2])) continue;
                                     case 2 : if (!text[1].equals(lines[1])) continue;
-                                    case 1 : signSet.add((BlockEntitySign) chunkEntry.getValue());
+                                    case 1 : signSet.add((TileEntitySign) chunkEntry.getValue());
                                 }
                             }
                         }
@@ -195,21 +122,21 @@ public class Arithmetic {
 
     /***
      * For returning all signs in the level based on their text data
-     * @param level the Level to be scanned for signs
+     * @param world the Level to be scanned for signs
      * @param lines The lines of text by which the signs will be evaluated
-     * @return A set of BlockEntitySigns with the level parameter, the text content of which matches the lines parameter
+     * @return A set of TileEntitySigns with the level parameter, the text content of which matches the lines parameter
      */
-    public static Set<BlockEntitySign> findSignsByText(Level level, String... lines) {
+    public static Set<TileEntitySign> findSignsByText(World world, String... lines) {
 
-        Map<Long, ? extends FullChunk> chunksMap = level.getChunks();
+        Map<Long, ? extends Chunk> chunksMap = world.getLoadedChunks();
 
-        Map<Long, BlockEntity> entMap;
-        Set<BlockEntitySign> signSet = new HashSet<>();
+        Map<Long, TileEntity> entMap;
+        Set<TileEntitySign> signSet = new HashSet<>();
 
         for (var entry : chunksMap.entrySet()) {
             entMap = entry.getValue().getBlockEntities();
             for (var chunkEntry : entMap.entrySet()) {
-                if (chunkEntry.getValue() instanceof BlockEntitySign sign) {
+                if (chunkEntry.getValue() instanceof TileEntitySign sign) {
 
                     if (sign.getText() != null && sign.getText()[0] != null && sign.getText()[0].equals(lines[0])) {
                         String[] text = sign.getText();
@@ -217,7 +144,7 @@ public class Arithmetic {
                             case 4 : if (!text[3].equals(lines[3])) continue;
                             case 3 : if (!text[2].equals(lines[2])) continue;
                             case 2 : if (!text[1].equals(lines[1])) continue;
-                            case 1 : signSet.add((BlockEntitySign) chunkEntry.getValue());
+                            case 1 : signSet.add((TileEntitySign) chunkEntry.getValue());
                         }
                     }
                 }
@@ -228,16 +155,16 @@ public class Arithmetic {
     }
 
     /***
-     * Returns a BlockEntitySign based on its NBT data. Intended for individual signs, as it returns when conditions are met.
+     * Returns a TileEntitySign based on its NBT data. Intended for individual signs, as it returns when conditions are met.
      * @param player The Player object
-     * @param tag The nbt tag key that differentiates the BlockEntitySign object
-     * @return The BlockEntitySign object in the player's level with an nbt tag key equal to tag
+     * @param tag The nbt tag key that differentiates the TileEntitySign object
+     * @return The TileEntitySign object in the player's level with an nbt tag key equal to tag
      */
-    public static BlockEntitySign findSignByTag(Player player, String tag) {
+    public static TileEntitySign findSignByTag(Player player, String tag) {
 
-        Level level = player.getLevel();
+        World world = player.getWorld();
 
-        Map<Long, ? extends FullChunk> chunksMap = level.getChunks();
+        Map<Long, ? extends Chunk> chunksMap = world.getLoadedChunks();
 
         Map<Long, BlockEntity> entMap;
 
@@ -245,8 +172,8 @@ public class Arithmetic {
             entMap = entry.getValue().getBlockEntities();
             for (var chunkEntry : entMap.entrySet()) {
                 if (chunkEntry.getValue().namedTag.contains(tag)) {
-                    if (chunkEntry.getValue() instanceof BlockEntitySign) {
-                        return (BlockEntitySign) chunkEntry.getValue();
+                    if (chunkEntry.getValue() instanceof TileEntitySign) {
+                        return (TileEntitySign) chunkEntry.getValue();
                     }
                 }
 
@@ -266,9 +193,9 @@ public class Arithmetic {
      */
     public static void findFrame(Player player, String sum, int i, int v, int type) throws InvalidFrameWriteException {
 
-        Level level = player.getLevel();
+        World world = player.getWorld();
 
-        Map<Long, ? extends FullChunk> chunksMap = level.getChunks();
+        Map<Long, ? extends Chunk> chunksMap = world.getLoadedChunks();
 
         Map<Long, BlockEntity> entMap;
 
@@ -289,9 +216,9 @@ public class Arithmetic {
 
     public static void findFrame(Player player, String puzzle, int type) throws InvalidFrameWriteException {
 
-        Level level = player.getLevel();
+        World world = player.getWorld();
 
-        Map<Long, ? extends FullChunk> chunksMap = level.getChunks();
+        Map<Long, ? extends Chunk> chunksMap = world.getLoadedChunks();
 
         Map<Long, BlockEntity> entMap;
 
@@ -310,9 +237,9 @@ public class Arithmetic {
 
     public static BlockEntityItemFrame getFrame(Player player, String tag, int i){
 
-        Level level = player.getLevel();
+        World world = player.getWorld();
 
-        Map<Long, ? extends FullChunk> chunksMap = level.getChunks();
+        Map<Long, ? extends Chunk> chunksMap = world.getLoadedChunks();
 
         Map<Long, BlockEntity> entMap;
 
@@ -340,9 +267,9 @@ public class Arithmetic {
      */
     public static BlockEntityItemFrame getFrame(Player player, String tag) {
 
-        Level level = player.getLevel();
+        World world = player.getWorld();
 
-        Map<Long, ? extends FullChunk> chunksMap = level.getChunks();
+        Map<Long, ? extends Chunk> chunksMap = world.getLoadedChunks();
 
         Map<Long, BlockEntity> entMap;
 
@@ -368,9 +295,9 @@ public class Arithmetic {
      */
     public static Set<BlockEntityItemFrame> getFrames(Player player, String tag) {
 
-        Level level = player.getLevel();
+        World world = player.getWorld();
 
-        Map<Long, ? extends FullChunk> chunksMap = level.getChunks();
+        Map<Long, ? extends Chunk> chunksMap = world.getLoadedChunks();
 
         Map<Long, BlockEntity> entMap;
         Set<BlockEntityItemFrame> frameMap = new HashSet<>();
@@ -392,14 +319,14 @@ public class Arithmetic {
     /***
      * This one is intended for individual signs, as it returns when conditions are met
      * @param player The Player object
-     * @param tag The nbt tag key that differentiates the BlockEntitySign object
-     * @return The BlockEntitySign object in the player's level with an nbt tag key equal to tag
+     * @param tag The nbt tag key that differentiates the TileEntitySign object
+     * @return The TileEntitySign object in the player's level with an nbt tag key equal to tag
      */
-    public static BlockEntitySign getSign(Player player, String tag) {
+    public static TileEntitySign getSign(Player player, String tag) {
 
-        Level level = player.getLevel();
+        World world = player.getWorld();
 
-        Map<Long, ? extends FullChunk> chunksMap = level.getChunks();
+        Map<Long, ? extends Chunk> chunksMap = world.getLoadedChunks();
 
         Map<Long, BlockEntity> entMap;
 
@@ -407,8 +334,8 @@ public class Arithmetic {
             entMap = entry.getValue().getBlockEntities();
             for (var chunkEntry : entMap.entrySet()) {
                 if (chunkEntry.getValue().namedTag.contains(tag)) {
-                    if (chunkEntry.getValue() instanceof BlockEntitySign) {
-                        return (BlockEntitySign) chunkEntry.getValue();
+                    if (chunkEntry.getValue() instanceof TileEntitySign) {
+                        return (TileEntitySign) chunkEntry.getValue();
                     }
                 }
             }
@@ -423,9 +350,9 @@ public class Arithmetic {
      */
     public static synchronized void deleteFrameEntities(Player player, String tag) {
 
-        Level level = player.getLevel();
+        World world = player.getWorld();
 
-        Map<Long, ? extends FullChunk> chunksMap = level.getChunks();
+        Map<Long, ? extends Chunk> chunksMap = world.getLoadedChunks();
 
         Map<Long, BlockEntity> entMap;
 
@@ -447,9 +374,9 @@ public class Arithmetic {
      * @param level The Level object
      * @param tag The nbt tag key that differentiates the BlockEntityItemFrame object
      */
-    public static synchronized boolean deleteFrameEntities(Level level, String tag) {
+    public static synchronized boolean deleteFrameEntities(World world, String tag) {
 
-        Map<Long, ? extends FullChunk> chunksMap = level.getChunks();
+        Map<Long, ? extends Chunk> chunksMap = world.getLoadedChunks();
 
         Map<Long, BlockEntity> entMap;
 
@@ -469,9 +396,9 @@ public class Arithmetic {
         return true;
     }
 
-    public static synchronized <E extends Entity> Entity getMob(Level level, String tag, Class<? extends Entity> mob) {
+    public static synchronized <E extends Entity> Entity getMob(World world, String tag, Class<? extends Entity> mob) {
 
-        Map<Long, ? extends FullChunk> chunksMap = level.getChunks();
+        Map<Long, ? extends Chunk> chunksMap = world.getLoadedChunks();
 
         Map<Long, Entity> entMap;
 
@@ -495,9 +422,9 @@ public class Arithmetic {
      * @param tag The nbt tag key that differentiates the mob
      * @param mob The entity subclass object type to be checked (what kind of mob)
      */
-    public static synchronized <E extends Entity> boolean deleteMobs(Level level, String tag, Class<? extends Entity> mob, Boolean fx) {
+    public static synchronized <E extends Entity> boolean deleteMobs(World world, String tag, Class<? extends Entity> mob, Boolean fx) {
 
-        Map<Long, ? extends FullChunk> chunksMap = level.getChunks();
+        Map<Long, ? extends Chunk> chunksMap = world.getLoadedChunks();
 
         Map<Long, Entity> entMap;
 
@@ -506,7 +433,7 @@ public class Arithmetic {
             for (var chunkEntry : entMap.entrySet()) {
                 if (chunkEntry.getValue().getClass() == mob) {
                     if (chunkEntry.getValue().namedTag.contains(tag)) {
-                        if (fx) {level.addParticleEffect(new Vector3(chunkEntry.getValue().x, chunkEntry.getValue().y, chunkEntry.getValue().z),DRAGON_DESTROY_BLOCK);}
+                        if (fx) {world.addParticleEffect(new Vector3(chunkEntry.getValue().x, chunkEntry.getValue().y, chunkEntry.getValue().z),DRAGON_DESTROY_BLOCK);}
                         chunkEntry.getValue().close();
                     }
                 }
@@ -524,9 +451,9 @@ public class Arithmetic {
      */
     public static int countFrames(Player player, String tag) {
 
-        Level level = player.getLevel();
+        World world = player.getWorld();
 
-        Map<Long, ? extends FullChunk> chunksMap = level.getChunks();
+        Map<Long, ? extends Chunk> chunksMap = world.getLoadedChunks();
 
         Map<Long, BlockEntity> entMap;
 
@@ -554,9 +481,9 @@ public class Arithmetic {
      */
     public static int findFrames(Player player, String tag, int i){
 
-        Level level = player.getLevel();
+        World world = player.getWorld();
 
-        Map<Long, ? extends FullChunk> chunksMap = level.getChunks();
+        Map<Long, ? extends Chunk> chunksMap = world.getLoadedChunks();
 
         Map<Long, BlockEntity> entMap;
 
@@ -757,7 +684,7 @@ public class Arithmetic {
                         }
                     }
                 }
-                iF.getLevel().addParticleEffect(new Vector3(iF.add(0.5).x, iF.add(0, 0.5).y, iF.add(0, 0, 0.5).z), CAMERA_SHOOT_EXPLOSION);
+                iF.getWorld().addParticleEffect(new Vector3(iF.add(0.5).x, iF.add(0, 0.5).y, iF.add(0, 0, 0.5).z), CAMERA_SHOOT_EXPLOSION);
             }
     }
 
@@ -817,7 +744,7 @@ public class Arithmetic {
 
                     iF.setItem(map);
 
-                    iF.getLevel().addParticleEffect(new Vector3(iF.add(0.5).x, iF.add(0,0.5).y, iF.add(0,0,0.5).z),CAMERA_SHOOT_EXPLOSION);
+                    iF.getWorld().addParticleEffect(new Vector3(iF.add(0.5).x, iF.add(0,0.5).y, iF.add(0,0,0.5).z),CAMERA_SHOOT_EXPLOSION);
                 }
                 case 2 -> throw new InvalidFrameWriteException(type);
                 case 3 -> {
@@ -839,7 +766,7 @@ public class Arithmetic {
                     }
                     map.setImage(image);
                     iF.setItem(map);
-                    iF.getLevel().addParticleEffect(new Vector3(iF.add(0.5).x, iF.add(0,0.5).y, iF.add(0,0,0.5).z),CAMERA_SHOOT_EXPLOSION);}
+                    iF.getWorld().addParticleEffect(new Vector3(iF.add(0.5).x, iF.add(0,0.5).y, iF.add(0,0,0.5).z),CAMERA_SHOOT_EXPLOSION);}
                 case 4 -> {
                     ItemMap map = new ItemMap();
                     BufferedImage image = null;
@@ -864,7 +791,7 @@ public class Arithmetic {
                     if (update) {
                         iF.spawnToAll();
                     }
-                    iF.getLevel().addParticleEffect(new Vector3(iF.add(0.5).x, iF.add(0,0.5).y, iF.add(0,0,0.5).z),CAMERA_SHOOT_EXPLOSION);}
+                    iF.getWorld().addParticleEffect(new Vector3(iF.add(0.5).x, iF.add(0,0.5).y, iF.add(0,0,0.5).z),CAMERA_SHOOT_EXPLOSION);}
                 case 5 -> {
                     ItemMap map = new ItemMap();
                     BufferedImage image = null;
@@ -883,7 +810,7 @@ public class Arithmetic {
                     if (update) {
                         iF.spawnToAll();
                     }
-                    iF.getLevel().addParticleEffect(new Vector3(iF.add(0.5).x, iF.add(0,0.5).y, iF.add(0,0,0.5).z),CAMERA_SHOOT_EXPLOSION);}
+                    iF.getWorld().addParticleEffect(new Vector3(iF.add(0.5).x, iF.add(0,0.5).y, iF.add(0,0,0.5).z),CAMERA_SHOOT_EXPLOSION);}
                 case 6 -> {
                     ItemMap map = new ItemMap();
                     BufferedImage image = null;
@@ -912,7 +839,7 @@ public class Arithmetic {
                     }
                     map.setImage(image);
                     iF.setItem(map);
-                    iF.getLevel().addParticleEffect(new Vector3(iF.add(0.5).x, iF.add(0,0.5).y, iF.add(0,0,0.5).z),CAMERA_SHOOT_EXPLOSION);
+                    iF.getWorld().addParticleEffect(new Vector3(iF.add(0.5).x, iF.add(0,0.5).y, iF.add(0,0,0.5).z),CAMERA_SHOOT_EXPLOSION);
                 }
                 case 7 -> {
                     ItemMap map = new ItemMap();
@@ -941,7 +868,7 @@ public class Arithmetic {
                     }
                     map.setImage(image);
                     iF.setItem(map);
-                    iF.getLevel().addParticleEffect(new Vector3(iF.add(0.5).x, iF.add(0,0.5).y, iF.add(0,0,0.5).z),CAMERA_SHOOT_EXPLOSION);
+                    iF.getWorld().addParticleEffect(new Vector3(iF.add(0.5).x, iF.add(0,0.5).y, iF.add(0,0,0.5).z),CAMERA_SHOOT_EXPLOSION);
                 }
             }
         }
@@ -974,13 +901,13 @@ public class Arithmetic {
         return answerFrames;
     }
 
-    public static synchronized List<BlockEntityItemFrame> applyItemFrames(Level level, Map<Integer, Vector3> columns, int defaultFace, int max, boolean margin) throws InterruptedException {
+    public static synchronized List<BlockEntityItemFrame> applyItemFrames(World world, Map<Integer, Vector3> columns, int defaultFace, int max, boolean margin) throws InterruptedException {
         return applyItemFrames(level, columns, defaultFace, "", max, margin, false, true);
     }
-    public static synchronized List<BlockEntityItemFrame> applyItemFrames(Level level, Map<Integer, Vector3> columns, int defaultFace, String puzzle, int max, boolean margin) throws InterruptedException {
+    public static synchronized List<BlockEntityItemFrame> applyItemFrames(World world, Map<Integer, Vector3> columns, int defaultFace, String puzzle, int max, boolean margin) throws InterruptedException {
         return applyItemFrames(level, columns, defaultFace, puzzle, max, margin, false, true);
     }
-    public static synchronized List<BlockEntityItemFrame> applyItemFrames(Level level, Vector3[] columns, int defaultFace, String puzzle, int max, boolean margin, boolean empty) throws InterruptedException {
+    public static synchronized List<BlockEntityItemFrame> applyItemFrames(World world, Vector3[] columns, int defaultFace, String puzzle, int max, boolean margin, boolean empty) throws InterruptedException {
         int counter = 0;
         HashMap<Integer, Vector3> columnsMap = new HashMap<>();
         for (Vector3 column : columns) {
@@ -989,7 +916,7 @@ public class Arithmetic {
             }
         return applyItemFrames(level, columnsMap, defaultFace, puzzle, max, margin, empty, true);
     }
-    public static synchronized List<BlockEntityItemFrame> applyItemFrames(Level level, Vector3[] columns, int defaultFace, String puzzle, int max, boolean margin, boolean empty, boolean delete) throws InterruptedException {
+    public static synchronized List<BlockEntityItemFrame> applyItemFrames(World world, Vector3[] columns, int defaultFace, String puzzle, int max, boolean margin, boolean empty, boolean delete) throws InterruptedException {
         int counter = 0;
         HashMap<Integer, Vector3> columnsMap = new HashMap<>();
         for (Vector3 column : columns) {
@@ -1017,7 +944,7 @@ public class Arithmetic {
          *               (such as in Pillars puzzles).
          * @throws InterruptedException
          */
-    public static synchronized List<BlockEntityItemFrame> applyItemFrames(Level level, Map<Integer, Vector3> columns, int defaultFace, String puzzle, int max, boolean margin, boolean empty, boolean delete) throws InterruptedException {
+    public static synchronized List<BlockEntityItemFrame> applyItemFrames(World world, Map<Integer, Vector3> columns, int defaultFace, String puzzle, int max, boolean margin, boolean empty, boolean delete) throws InterruptedException {
 
         BlockItemFrame frame = new BlockItemFrame();
         frame.setDamage(defaultFace);
@@ -1110,9 +1037,9 @@ public class Arithmetic {
                     AddPillarObjects.getAllBlockLocs().addAll(AddPillarObjects.getBlockLocs());
                 }
 
-                if (level.isFullBlock(pe.add(0, i))) {
+                if (world.isFullBlock(pe.add(0, i))) {
 
-                    if (level.isFullBlock(pe.add(0, (i + 1))) || !margin) {
+                    if (world.isFullBlock(pe.add(0, (i + 1))) || !margin) {
                         Arithmetic.setCachedTag(contents);
                         AddPillarObjects apo2 = new AddPillarObjects(level, pe, frame, defaultFace, i, false);
                         apo2.start();
@@ -1137,10 +1064,10 @@ public class Arithmetic {
                             frame.setZ(contents.getInt("z"));
                             BlockEntityItemFrame frameEnt = new BlockEntityItemFrame(frame.getChunk(), contents);
                             if (item instanceof ItemMap) frameEnt.setItem(item);
-                            level.addBlockEntity(frameEnt);
+                            world.addBlockEntity(frameEnt);
                             itemFrames.add(frameEnt);
 
-                            level.addParticleEffect(new Vector3(frame.add(0.5).x, frame.add(0, 0.5).y, frame.add(0, 0, 0.5).z), CAMERA_SHOOT_EXPLOSION);
+                            world.addParticleEffect(new Vector3(frame.add(0.5).x, frame.add(0, 0.5).y, frame.add(0, 0, 0.5).z), CAMERA_SHOOT_EXPLOSION);
                         }
                     }
                 }
@@ -1163,7 +1090,7 @@ public class Arithmetic {
 
 
     public static void makeSubmit(Location loc, String facing) {
-        Level l = loc.getLevel();
+        Level l = loc.getWorld();
         l.setBlock(loc.add(0, -1), new BlockWood());
 
         int facingInt;
@@ -1193,7 +1120,7 @@ public class Arithmetic {
 
     public static void replacePuzzleSign(BlockWallSign signBlock, String questionSetID){
 
-        BlockEntitySign sign = (BlockEntitySign) signBlock.getLevel().getBlockEntity(signBlock);
+        TileEntitySign sign = (TileEntitySign) signBlock.getWorld().getBlockEntity(signBlock);
         Location loc = signBlock.getLocation();
         String[] signText = new String[4];
 
@@ -1209,7 +1136,7 @@ public class Arithmetic {
                         .add(new DoubleTag("1", loc.y))
                         .add(new DoubleTag("2", loc.z)));
 
-        signBlock.getLevel().addBlockEntity(sign);
+        signBlock.getWorld().addBlockEntity(sign);
     }
 
     /**
@@ -1280,19 +1207,19 @@ public class Arithmetic {
     public static Location highestGroundAt(Location loc) {
         for (int i = 320 ; i > 0 ; i--) {
             loc.setY(i);
-            if (!(loc.getLevel().getBlock(loc) instanceof BlockAir)) return loc.add(0,1);
+            if (!(loc.getWorld().getBlock(loc) instanceof BlockAir)) return loc.add(0,1);
         }
         return null;
     }
 
-    public static Vector3 findGroundAbove(Vector3 loc, Level level) {
+    public static Vector3 findGroundAbove(Vector3 loc, World world) {
         loc.add(0,1);
 
         for (int i = (int)loc.y ; i < 320 ; i++) {
             loc.setY(i);
             Location spawnLoc = new Location(loc.x, loc.y + 1, loc.z);
 
-            if (!(level.getBlock(loc) instanceof BlockAir) && (level.getBlock(spawnLoc) instanceof BlockAir)) { //check for a ground block and then for an air block above it
+            if (!(world.getBlock(loc) instanceof BlockAir) && (world.getBlock(spawnLoc) instanceof BlockAir)) { //check for a ground block and then for an air block above it
                 return spawnLoc;
             }
         }
@@ -1306,7 +1233,7 @@ public class Arithmetic {
             loc.setY(i);
             Location spawnLoc = new Location(loc.x, loc.y + 1, loc.z);
 
-            if (!(loc.getLevel().getBlock(loc) instanceof BlockAir) && (loc.getLevel().getBlock(spawnLoc) instanceof BlockAir)) { //check for a ground block and then for an air block above it
+            if (!(loc.getWorld().getBlock(loc) instanceof BlockAir) && (loc.getWorld().getBlock(spawnLoc) instanceof BlockAir)) { //check for a ground block and then for an air block above it
                 return spawnLoc;
             }
         }

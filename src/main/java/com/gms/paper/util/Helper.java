@@ -537,12 +537,12 @@ public class Helper {
 
         lesson.enter(targetWorldName);
 
-        Location spawn;
+        Vector3D spawn;
 
         if (pos != null)
-            spawn = new Location(pos.x, pos.y, pos.z);
+            spawn = new Vector3D(pos.x, pos.y, pos.z);
         else
-            spawn = new Location(lesson.spawnPos.x, lesson.spawnPos.y, lesson.spawnPos.z);
+            spawn = new Vector3D(lesson.spawnPos.x, lesson.spawnPos.y, lesson.spawnPos.z);
 
         teleport.tpWorld(player, targetWorldName, spawn, headYaw, worldName);
 

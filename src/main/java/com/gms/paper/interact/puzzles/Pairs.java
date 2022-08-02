@@ -19,6 +19,8 @@ import com.gms.mc.interact.puzzles.maths.Arithmetic;
 import com.gms.mc.interact.puzzles.maths.threads.AddPillarObjects;
 import com.gms.mc.util.Helper;
 import com.gms.mc.util.Log;
+import com.gms.paper.events.FrameClickHandling;
+import org.bukkit.entity.Player;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

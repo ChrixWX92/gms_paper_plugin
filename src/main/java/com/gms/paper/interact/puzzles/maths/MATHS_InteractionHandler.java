@@ -1,34 +1,27 @@
 package com.gms.paper.interact.puzzles.maths;
 
-import cn.nukkit.Player;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockButtonStone;
-import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockentity.BlockEntityItemFrame;
-import cn.nukkit.event.player.PlayerInteractEvent;
-import cn.nukkit.level.Location;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.utils.TextFormat;
-import com.gms.mc.custom.particles.ParticleFX;
-import com.gms.mc.custom.particles.ParticleFXSequence;
-import com.gms.mc.custom.sound.MusicMaker;
-import com.gms.mc.custom.sound.SFX;
-import com.gms.mc.data.ChildProfile;
-import com.gms.mc.error.InvalidBackendQueryException;
-import com.gms.mc.error.InvalidFrameWriteException;
-import com.gms.mc.interact.InteractionHandler;
-import com.gms.mc.interact.puzzles.*;
-import com.gms.mc.util.Log;
+import com.gms.paper.custom.particles.ParticleFX;
+import com.gms.paper.custom.particles.ParticleFXSequence;
+import com.gms.paper.custom.sound.MusicMaker;
+import com.gms.paper.custom.sound.SFX;
+import com.gms.paper.data.ChildProfile;
+import com.gms.paper.error.InvalidBackendQueryException;
+import com.gms.paper.error.InvalidFrameWriteException;
+import com.gms.paper.interact.InteractionHandler;
+import com.gms.paper.interact.puzzles.*;
+import com.gms.paper.util.Log;
+import com.gms.paper.interact.puzzles.Resettable;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Objects;
 
-import static com.gms.mc.interact.puzzles.MathsTopic.ADDITION;
-import static com.gms.mc.interact.puzzles.MathsTopic.SUBTRACTION;
-import static com.gms.mc.interact.puzzles.PuzzleType.*;
-import static com.gms.mc.interact.puzzles.PuzzleType.GRID;
+import static com.gms.paper.interact.puzzles.MathsTopic.ADDITION;
+import static com.gms.paper.interact.puzzles.MathsTopic.SUBTRACTION;
+import static com.gms.paper.interact.puzzles.PuzzleType.*;
+import static com.gms.paper.interact.puzzles.PuzzleType.GRID;
 
 public class MATHS_InteractionHandler extends InteractionHandler {
 

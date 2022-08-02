@@ -1,16 +1,9 @@
 package com.gms.paper.events;
 
+import org.bukkit.Tag;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
-import cn.nukkit.block.*;
-import cn.nukkit.blockentity.BlockEntityItemFrame;
-import cn.nukkit.event.EventHandler;
-import cn.nukkit.event.EventPriority;
-import cn.nukkit.event.Listener;
-import cn.nukkit.event.player.PlayerInteractEvent;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemMap;
-import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.scheduler.NukkitRunnable;
 import com.gms.paper.util.TextFormat;
 import com.gms.paper.Main;
 import com.gms.paper.error.InvalidFrameWriteException;
@@ -18,9 +11,11 @@ import com.gms.paper.interact.puzzles.BackendUtils;
 import com.gms.paper.interact.puzzles.Pairs;
 import com.gms.paper.interact.puzzles.PuzzleType;
 import com.gms.paper.interact.puzzles.maths.Arithmetic;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEvent;
 
-import java.util.Collection;
 import java.util.HashMap;
 
 import static com.gms.paper.interact.puzzles.PuzzleType.*;
@@ -32,7 +27,7 @@ public class FrameClickHandling implements Listener {
     private static long cachedID = 9223372036854775807L;
     private static boolean initialReset = false;
 
-    @EventHandler (ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void ItemFrameListener(PlayerInteractEvent event) throws Exception {
 
         if (hold){

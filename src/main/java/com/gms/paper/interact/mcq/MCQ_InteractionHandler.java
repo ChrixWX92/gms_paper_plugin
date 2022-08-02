@@ -14,7 +14,9 @@ import com.gms.paper.interact.tpqs.TPQS_Answer;
 import com.gms.paper.util.Helper;
 import com.gms.paper.util.Log;
 import com.gms.paper.util.Scanner;
+import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,7 +56,7 @@ public class MCQ_InteractionHandler  extends InteractionHandler{
         List<Location> lessonSignLocations = new ArrayList<Location>();
 
         for(Location signLocation : signLocations){
-            BlockEntitySign sign = (BlockEntitySign)level.getBlockEntity(signLocation);
+            BlockEntitySign sign = (BlockEntitySign) world.getBlockEntity(signLocation);
             String[] signText = getSignInfo(sign);
             if(signText != null && signText.length > 1 && signText[1].length() > 1) {
                 String signQuestionSetId = signText[1].substring(1);
@@ -90,7 +92,7 @@ public class MCQ_InteractionHandler  extends InteractionHandler{
         GamePosition spawnPosWorld = getWorldSpawnPosition(signText[1]);
 
         GamePosition targetSignPos = spawnPosWorld.add(s_blockSignOffset);
-        String[] moreInfo = getSignInfo(level, targetSignPos);
+        String[] moreInfo = getSignInfo(world, targetSignPos);
 
         if (moreInfo == null || moreInfo.length == 0)
             throw new RuntimeException(String.format("Unable to find additional information underneath spawn position for question: %s", idInfo.questionContentId));

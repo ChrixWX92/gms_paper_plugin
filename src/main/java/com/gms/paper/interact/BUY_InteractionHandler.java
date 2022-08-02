@@ -118,12 +118,12 @@ public class BUY_InteractionHandler extends InteractionHandler {
         GamePosition labelSignLoc = new GamePosition(buttonLoc, new Location(0, 1, 0), false);
         HashMap<String, String> prices = BlockShopUtils.getPrices();
 
-        if (level.getBlockEntity(labelSignLoc) instanceof BlockEntitySign labelSignEnt) {
+        if (world.getBlockEntity(labelSignLoc) instanceof BlockEntitySign labelSignEnt) {
 
             String[] initialString = labelSignEnt.getText();
 
             String[] newSignText = new String[2];
-            Block labelSign = level.getBlock(labelSignLoc);
+            Block labelSign = world.getBlock(labelSignLoc);
             Block block;
 
             switch (button.getFacing()) {

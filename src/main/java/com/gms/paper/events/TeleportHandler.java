@@ -1,18 +1,23 @@
 package com.gms.paper.events;
 
+import com.gms.paper.util.Vector3D;
+import net.minecraft.network.protocol.game.PacketPlayOutEntityHeadRotation;
+import net.minecraft.server.level.EntityPlayer;
+import net.minecraft.server.network.PlayerConnection;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import cn.nukkit.event.EventHandler;
-import cn.nukkit.event.Listener;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.Location;
-import cn.nukkit.math.Vector3;
 import com.gms.paper.Main;
 import com.gms.paper.data.User;
 import com.gms.paper.util.Helper;
 import com.gms.paper.util.Log;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 
 public class TeleportHandler implements Listener {
-    static Level s_current;
+    static World s_current;
 
     public TeleportHandler() {
     }
@@ -24,8 +29,8 @@ public class TeleportHandler implements Listener {
     public static void unloadCurrentLevel() {
         if (s_current != null) {
             try {
-                Log.debug(String.format("Unloading level: %s [Dir: %s]", s_current.getName(), s_current.getFolderName()));
-                s_current.unload();
+                Log.debug(String.format("Unloading level: %s [Dir: %s]", s_current.getName(), s_current.getWorldFolder().getName()));
+                Bukkit.getServer().unloadWorld(s_current, false);
             }
             catch (Exception e) {
                 Log.exception(e, "Unable to unload current level. Ignoring ...");
@@ -36,10 +41,9 @@ public class TeleportHandler implements Listener {
         }
     }
 
-    @EventHandler
-    public void tpWorld(Player p, String worldName, Location spawn, float headYaw, String worldId) {
+    // @EventHandler TODO: Why is this annotation here? Invalid method signature to be using this
+    public void tpWorld(Player player, String worldName, Vector3D spawnCoordinates, float headYaw, String worldId) {
         try {
-            Player player = p;
 
             if (!this.getPlugin().getServer().isLevelLoaded(worldName)) {
                 boolean didLoad = this.getPlugin().getServer().loadLevel(worldName);
@@ -48,33 +52,40 @@ public class TeleportHandler implements Listener {
             }
 
             Log.debug(String.format("Loading world: %s", worldName));
-            Level level = this.getPlugin().getServer().getWorldByName(worldName);
+            World world = this.getPlugin().getServer().getWorldByName(worldName);
 
-            if (level == null)
+            if (world == null)
                 return;
 
-            var prevLevel = s_current;
+            Location spawn = new Location(world, spawnCoordinates.x, spawnCoordinates.y, spawnCoordinates.z);
+            World prevLevel = s_current;
 
-            s_current = level;
+            s_current = world;
 
             boolean didLoad = false;
 
-            player.teleport(level.getSafeSpawn());
+            player.teleport(world.getSafeSpawn());
 
-            if (level.getFolderName().equals(Helper.s_mainWorld)) {
+            if (world.getFolderName().equals(Helper.s_mainWorld)) {
                 Vector3D v = Helper.s_mainLobbySpawnPos;
-                spawn = new Location(v.x, v.y, v.z);
+                spawn = new Location(world, v.x, v.y, v.z);
             }
 
-            Log.debug(String.format("Teleport to world: %s @ (%d, %d, %d)", worldName, (int)spawn.x, (int)spawn.y, (int)spawn.z));
+            Log.debug(String.format("Teleport to world: %s @ (%d, %d, %d)", worldName, (int)spawn.getX(), (int)spawn.getY(), (int)spawn.getZ()));
             player.teleport(spawn);
-            player.headYaw = headYaw;
+
+            //player.headYaw = headYaw;
+            //TODO: Unsure why this headyaw value is being change, but accomplishing the desired effect with packet send:
+            EntityPlayer entityPlayer = ((CraftPlayer) player).getHandle();
+            PlayerConnection connection = entityPlayer.b;
+            connection.a(new PacketPlayOutEntityHeadRotation(entityPlayer, (byte) (headYaw)));
+            // Hoping the above method is the correct one
 
             didLoad = true;
 
             if (User.getCurrent() != null && User.getCurrent().getState() != null) {
                 User.getCurrent().getState().updateWorld(worldId);
-                User.getCurrent().getState().updatePos(new Vector3(spawn.x, spawn.y, spawn.z), 0);
+                User.getCurrent().getState().updatePos(new Vector3D(spawn.getX(), spawn.getY(), spawn.getZ()), 0);
             }
 
             if (!didLoad) {
@@ -84,11 +95,11 @@ public class TeleportHandler implements Listener {
                 /// TODO: later
 //                if (prevLevel != null) {
 //                    try {
-//                        Log.debug(String.format("Unloading level: %s [Dir: %s]", prevLevel.getName(), prevLevel.getFolderName()));
+//                        Log.debug(String.format("Unloading world: %s [Dir: %s]", prevLevel.getName(), prevLevel.getFolderName()));
 //                        this.getPlugin().getServer().unloadLevel(prevLevel);
 //                    }
 //                    catch (Exception e) {
-//                        Log.exception(e, String.format("Error unloading level: %s [Dir: %s]. Ignoring ...", prevLevel.getName(), prevLevel.getFolderName()));
+//                        Log.exception(e, String.format("Error unloading world: %s [Dir: %s]. Ignoring ...", prevLevel.getName(), prevLevel.getFolderName()));
 //                    }
 //                }
             }

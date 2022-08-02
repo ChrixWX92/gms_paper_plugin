@@ -1,17 +1,17 @@
 package com.gms.paper.interact.tpqs;
 
-import cn.nukkit.event.player.PlayerInteractEvent;
-import cn.nukkit.level.Level;
 import com.gms.paper.data.*;
 import com.gms.paper.error.InvalidBackendQueryException;
 import com.gms.paper.interact.InteractionHandler;
 import com.gms.paper.util.Helper;
 import com.gms.paper.util.Log;
+import org.bukkit.World;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.io.IOException;
 
 public class TPQS_InteractionHandler extends InteractionHandler {
-    public static GamePosition[] findSignLocations(Level level, GamePosition questionLocation) {
+    public static GamePosition[] findSignLocations(World world, GamePosition questionLocation) {
         GamePosition[] signPositions = new GamePosition [s_answerOffsets.length + 1];
 
         signPositions[0] = questionLocation.add(s_questionOffset);
@@ -39,24 +39,24 @@ public class TPQS_InteractionHandler extends InteractionHandler {
         TPQS_Answer ans = question.getTPQSAnswer();
         answer = ans;
 
-        GamePosition[] signLocations = findSignLocations(level, qpos);
+        GamePosition[] signLocations = findSignLocations(world, qpos);
 
 //        GamePosition additionalInfoLoc = signLocations[0].add(s_questionAdditionalInfoOffset);
 //        populateSign(level, "this is a test", additionalInfoLoc);
 
-        populateSign(level, Helper.formatQuestionSign(question.prompt), signLocations[0]);
+        populateSign(world, Helper.formatQuestionSign(question.prompt), signLocations[0]);
 
         for (int i = 1; i < signLocations.length && i < ans.answerOptions.size() + 1; i++) {
             GamePosition signLocation = signLocations[i];
             TPQS_Answer.Item ansOption = ans.answerOptions.get(i - 1);
-            if (!populateSign(level,Helper.formatAnswerSign(ansOption.answer), signLocation))
+            if (!populateSign(world,Helper.formatAnswerSign(ansOption.answer), signLocation))
                 Log.error(String.format("Error populating sign index: %d", i + 1));
         }
 
         //if extra prompt available
         if(question.getExtraPrompt() != null){
             GamePosition promptLocation = qpos.add(s_extraPromptOffset);
-            if(!populateSign(level, Helper.formatQuestionSign(question.getExtraPrompt()), promptLocation, true)){
+            if(!populateSign(world, Helper.formatQuestionSign(question.getExtraPrompt()), promptLocation, true)){
                 Log.error(String.format("Error populating extra prompt: %s", promptLocation));
             }
         }
@@ -85,7 +85,7 @@ public class TPQS_InteractionHandler extends InteractionHandler {
         GamePosition spawnPosWorld = getWorldSpawnPosition(signText[1]);
 
         GamePosition targetSignPos = spawnPosWorld.add(s_blockSignOffset);
-        String[] moreInfo = getSignInfo(level, targetSignPos);
+        String[] moreInfo = getSignInfo(world, targetSignPos);
 
         if (moreInfo == null || moreInfo.length == 0)
             throw new RuntimeException(String.format("Unable to find additional information underneath spawn position for question: %s", idInfo.questionContentId));

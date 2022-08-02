@@ -5,6 +5,7 @@ import com.gms.paper.Main;
 import com.gms.paper.interact.InteractionHandler;
 import com.gms.paper.util.Helper;
 import com.gms.paper.util.Log;
+import com.gms.paper.util.Vector3D;
 import com.google.gson.Gson;
 
 import java.io.BufferedWriter;

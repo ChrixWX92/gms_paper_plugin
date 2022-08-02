@@ -1,7 +1,7 @@
 package com.gms.paper.data;
 
-import cn.nukkit.command.CommandSender;
 import com.google.gson.annotations.SerializedName;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +56,7 @@ public class QuestionSet extends GenericContent {
         return setCached();
     }
 
-    public Question getQuestion(CommandSender sender, QuestionIdInfo idInfo, int progressLevel) {
+    public Question getQuestion(Player player, QuestionIdInfo idInfo, int progressLevel) {
         cache();
 
         Question q = null;
