@@ -1,25 +1,14 @@
 package com.gms.paper.interact.puzzles;
 
-import cn.nukkit.Player;
-import cn.nukkit.block.*;
-import cn.nukkit.blockentity.BlockEntityItemFrame;
-import cn.nukkit.item.ItemMap;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.Location;
-import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.*;
-import cn.nukkit.scheduler.NukkitRunnable;
-import cn.nukkit.utils.TextFormat;
-import com.gms.mc.Main;
-import com.gms.mc.error.InvalidFrameWriteException;
-import com.gms.mc.interact.puzzles.handlers.anchors.AnchorHandler;
-import com.gms.mc.interact.puzzles.listeners.FrameClickHandling;
-import com.gms.mc.interact.puzzles.maths.Arithmetic;
-import com.gms.mc.interact.puzzles.maths.threads.AddPillarObjects;
-import com.gms.mc.util.Helper;
-import com.gms.mc.util.Log;
+import com.gms.paper.Main;
+import com.gms.paper.error.InvalidFrameWriteException;
+import com.gms.paper.interact.puzzles.handlers.anchors.AnchorHandler;
+import com.gms.paper.interact.puzzles.maths.Arithmetic;
+import com.gms.paper.interact.puzzles.maths.threads.AddPillarObjects;
+import com.gms.paper.util.Helper;
+import com.gms.paper.util.Log;
 import com.gms.paper.events.FrameClickHandling;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import javax.imageio.ImageIO;
@@ -33,8 +22,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.gms.mc.interact.puzzles.PuzzleType.*;
-import static com.gms.mc.interact.puzzles.PuzzleType.PAIRS;
+import static com.gms.paper.interact.puzzles.PuzzleType.PAIRS;
 
 public class Pairs {
 
@@ -66,7 +54,7 @@ public class Pairs {
      * @param
      * @param
      * @param
-     * @throws InvalidFrameWriteException
+     * @throws //InvalidFrameWriteException
      * @throws InterruptedException
      */
     public static void generatePairs(Player p, Location buttonLoc, String facing, HashMap<Integer, String[]> pairs, int apothem) throws InvalidFrameWriteException, InterruptedException {

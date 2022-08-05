@@ -1,35 +1,24 @@
 package com.gms.paper.interact.puzzles.maths;
 
-import cn.nukkit.Player;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAir;
-import cn.nukkit.block.BlockConcrete;
-import cn.nukkit.block.BlockFallable;
-import cn.nukkit.blockentity.BlockEntityItemFrame;
-import cn.nukkit.blockentity.BlockEntitySign;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
-import cn.nukkit.math.Vector3;
-import com.gms.mc.custom.sound.Chord;
-import com.gms.mc.custom.sound.ChordType;
-import com.gms.mc.custom.sound.MusicMaker;
-import com.gms.mc.custom.sound.Note;
-import com.gms.mc.error.InvalidFrameWriteException;
-import com.gms.mc.interact.puzzles.MathsPuzzle;
-import com.gms.mc.interact.puzzles.MathsTopic;
-import com.gms.mc.interact.puzzles.Resettable;
-import com.gms.mc.interact.puzzles.maths.threads.FindFrames;
-import com.gms.mc.util.Log;
+import com.gms.paper.custom.sound.Chord;
+import com.gms.paper.custom.sound.ChordType;
+import com.gms.paper.custom.sound.MusicMaker;
+import com.gms.paper.custom.sound.Note;
+import com.gms.paper.error.InvalidFrameWriteException;
+import com.gms.paper.interact.puzzles.MathsPuzzle;
+import com.gms.paper.interact.puzzles.MathsTopic;
+import com.gms.paper.interact.puzzles.Resettable;
+import com.gms.paper.interact.puzzles.maths.threads.FindFrames;
+import com.gms.paper.util.Log;
+import com.gms.paper.util.Vector3D;
 import io.netty.util.internal.ThreadLocalRandom;
+import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.IntStream;
 
-import static cn.nukkit.level.ParticleEffect.LLAMA_SPIT;
-import static cn.nukkit.level.Sound.BLOCK_STONECUTTER_USE;
-import static cn.nukkit.level.Sound.NOTE_HARP;
-import static com.gms.mc.interact.puzzles.PuzzleType.*;
+import static com.gms.paper.interact.puzzles.PuzzleType.*;
 
 public class Pillars extends MathsPuzzle implements Resettable {
 
@@ -43,9 +32,9 @@ public class Pillars extends MathsPuzzle implements Resettable {
         int id;
         String puzzleName;
         Level level;
-        Vector3 location; // Coordinates of base block
+        Vector3D location; // Coordinates of base block
         int facing;
-        Vector3 apex;
+        Vector3D apex;
         int colour;
         BlockFallable block;
         List<BlockFallable> blocks;

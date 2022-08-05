@@ -14,6 +14,6 @@ public class TP_InteractionHandler extends InteractionHandler {
 
         GamePosition spawnPos = Helper.parseLocation(signText[1]);
         GamePosition spawnPosWorld = signLoc.add(spawnPos);
-        teleportPlayer(player, spawnPosWorld);
+        teleportPlayerLocal(player, spawnPosWorld);
     }
 }

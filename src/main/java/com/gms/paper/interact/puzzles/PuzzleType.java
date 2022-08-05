@@ -1,22 +1,20 @@
 package com.gms.paper.interact.puzzles;
 
-import cn.nukkit.Player;
-import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.TextFormat;
-import com.gms.mc.data.Course;
-import com.gms.mc.data.QuestionIdInfo;
-import com.gms.mc.data.QuestionSet;
-import com.gms.mc.interact.puzzles.handlers.ASSEMBLE_InteractionHandler;
-import com.gms.mc.interact.puzzles.handlers.CHECKS_InteractionHandler;
-import com.gms.mc.interact.puzzles.handlers.MOBGROUP_InteractionHandler;
-import com.gms.mc.interact.puzzles.handlers.PAIRS_InteractionHandler;
-import com.gms.mc.interact.puzzles.maths.*;
-import com.gms.mc.util.Log;
+import com.gms.paper.data.Course;
+import com.gms.paper.data.QuestionIdInfo;
+import com.gms.paper.data.QuestionSet;
+import com.gms.paper.interact.puzzles.handlers.ASSEMBLE_InteractionHandler;
+import com.gms.paper.interact.puzzles.handlers.CHECKS_InteractionHandler;
+import com.gms.paper.interact.puzzles.handlers.MOBGROUP_InteractionHandler;
+import com.gms.paper.interact.puzzles.handlers.PAIRS_InteractionHandler;
+import com.gms.paper.interact.puzzles.maths.*;
+import com.gms.paper.util.Log;
 import com.gms.paper.data.Course;
 import com.gms.paper.data.QuestionIdInfo;
 import com.gms.paper.data.QuestionSet;
 import com.gms.paper.util.Log;
 import com.gms.paper.util.TextFormat;
+import com.gms.paper.util.Vector3D;
 import org.bukkit.entity.Player;
 
 import java.util.Objects;
@@ -85,7 +83,7 @@ public enum PuzzleType {
         }
     }
 
-    public static void initializePuzzleType(Player p, String[] anchorText, Vector3 anchorLoc) throws Exception {
+    public static void initializePuzzleType(Player p, String[] anchorText, Vector3D anchorLoc) throws Exception {
 
         String questionSetID = anchorText[1];
 

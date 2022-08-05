@@ -36,7 +36,7 @@ public class MCTP_InteractionHandler extends InteractionHandler {
         if ((line2.length() > 2)) {
             GamePosition spawnPos = Helper.parseLocation(line2);
             GamePosition spawnPosWorld = signLoc.add(spawnPos);
-            teleportPlayer(player, spawnPosWorld);
+            teleportPlayerLocal(player, spawnPosWorld);
         }
 
         String[] phraseBank = getPhraseBank();

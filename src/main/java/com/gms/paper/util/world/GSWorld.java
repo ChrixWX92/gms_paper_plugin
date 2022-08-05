@@ -3,22 +3,16 @@ package com.gms.paper.util.world;
 import com.destroystokyo.paper.exception.ServerException;
 import com.gms.paper.Main;
 import com.gms.paper.data.GamePosition;
-import com.gms.paper.level.LevelManager;
+import com.gms.paper.interact.puzzles.maths.Arithmetic;
 import com.gms.paper.util.Log;
+import com.gms.paper.util.Vector3D;
 import com.gms.paper.util.blocks.GSSign;
 import lombok.Getter;
 import net.minecraft.core.BlockPosition;
-import net.minecraft.server.WorldLoader;
-import net.minecraft.server.level.ChunkProviderServer;
-import net.minecraft.server.level.WorldProviderNormal;
 import net.minecraft.server.level.WorldServer;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.TileEntity;
 import net.minecraft.world.level.block.entity.TileEntitySign;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
@@ -48,16 +42,18 @@ public class GSWorld {
     public Set<GSSign> signs;
     @Getter
     public Path worldPath = Main.s_plugin.getServer().getWorldContainer().toPath();
+    @Getter
+    public @NotNull File folder;
 
-    public GSWorld(String name) {
 
+    public GSWorld(String name) throws ServerException {
+        this(Objects.requireNonNull(loadWorld(name, true)).bukkitWorld);
     }
 
     public GSWorld(net.minecraft.world.level.World nmsWorld) {
         this.nmsWorld = nmsWorld;
         this.bukkitWorld = nmsWorld.getWorld();
         this.populateFields();
-
     }
 
     public GSWorld(org.bukkit.World bukkitWorld) {
@@ -73,10 +69,21 @@ public class GSWorld {
         this.entities = this.bukkitWorld.getEntities();
         this.blockEntities = this.nmsWorld.capturedTileEntities;
         this.signs = this.fetchSigns();
+        this.folder = this.bukkitWorld.getWorldFolder();
+    }
+
+    public TileEntity getBlockEntity(Location location) {
+        BlockPosition blockPosition = new BlockPosition(location.getX(), location.getY(), location.getZ());
+        return this.nmsWorld.getBlockEntity(blockPosition, true);
     }
 
     public TileEntity getBlockEntity(GamePosition gamePosition) {
         BlockPosition blockPosition = new BlockPosition(gamePosition.x, gamePosition.y, gamePosition.z);
+        return this.nmsWorld.getBlockEntity(blockPosition, true);
+    }
+
+    public TileEntity getBlockEntity(Vector3D vector3D) {
+        BlockPosition blockPosition = new BlockPosition(vector3D.x, vector3D.y, vector3D.z);
         return this.nmsWorld.getBlockEntity(blockPosition, true);
     }
 
@@ -148,32 +155,44 @@ public class GSWorld {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
 */
 
+    public static GSWorld loadWorld(String name) throws ServerException {
+        return loadWorld(name, false);
+    }
 
-    public GSWorld loadLevel(String name) throws ServerException {
-        if (Objects.equals(name.trim(), "")) {
+    public static GSWorld loadWorld(String name, boolean initialize) throws ServerException {
+        WorldCreator wc = new WorldCreator(name);
+        GSWorld newWorld = new GSWorld(Bukkit.createWorld(wc));
+        return newWorld.load(initialize);
+    }
+
+    public GSWorld load() throws ServerException {
+        return this.load(false);
+    }
+
+    public GSWorld load(boolean initialize) throws ServerException {
+        return this.load(initialize, false);
+    }
+
+    public GSWorld load(boolean initialize, boolean force) throws ServerException {
+        if (Objects.equals(this.name.trim(), "")) {
             throw new ServerException("Invalid empty level name");
-        } else if (this.isLoaded()) {
+        } else if (this.isLoaded() && !force) {
+            Log.info("GSWorld " + this.name + " already loaded");
             return null;
         } else if (!this.isGenerated()) {
-            Log.warn("GSWorld not found for name " + name);
+            Log.warn("GSWorld not found for name " + this.name);
             return null;
         } else {
-            WorldCreator wc = new WorldCreator(name);
-            GSWorld newWorld = new GSWorld(Bukkit.createWorld(wc));
+            WorldCreator wc = new WorldCreator(this.name);
+            GSWorld newWorld = new GSWorld(Main.s_plugin.getServer().createWorld(wc));
             if (newWorld.bukkitWorld == null) {
-                Log.error("GSWorld not found for name " + name + " - unknown provider");
+                Log.error("GSWorld not found for name " + this.name + " - unknown provider");
                 return null;
             } else {
-                newWorld.initialize();
+                if (initialize) newWorld.initialize();
                 return newWorld;
             }
         }
-    }
-
-    public boolean load() {
-        WorldCreator wc = new WorldCreator(this.name);
-        Main.s_plugin.getServer().createWorld(wc);
-        return this.isLoaded();
     }
 
     public boolean isLoaded() {
@@ -201,6 +220,55 @@ public class GSWorld {
         Location spawn = this.spawnLocation;
         this.bukkitWorld.getChunkAt(spawn).load();
     }
+
+    public Vector3D getSafeSpawn() {
+        return this.getSafeSpawn(null);
+    }
+
+    public Vector3D getSafeSpawn(Vector3D spawn) {
+
+        if (spawn == null || spawn.y < 1.0D) {
+            spawn = new Vector3D(this.bukkitWorld.getSpawnLocation().getX(), this.bukkitWorld.getSpawnLocation().getY(), this.bukkitWorld.getSpawnLocation().getZ());
+        }
+
+        Vector3D v = spawn.floor();
+        @NotNull Chunk chunk = this.bukkitWorld.getChunkAt((int)v.x >> 4, (int)v.z >> 4);
+        int x = (int)v.x & 15;
+        int z = (int)v.z & 15;
+        if (chunk.isLoaded()) {
+            int y = (int) Arithmetic.clamp(v.y, 1.0D, 254.0D);
+
+            org.bukkit.block.Block block;
+            for(boolean wasAir = chunk.getBlock(x, y - 1, z).getType() == Material.AIR; y > 0 ; --y) {
+                block = chunk.getBlock(x, y, z);
+                if (block.isSolid()) {
+                    if (wasAir) {
+                        ++y;
+                        break;
+                    }
+                } else {
+                    wasAir = true;
+                }
+            }
+
+            for(; y >= 0 && y < 255; ++y) {
+                block = chunk.getBlock(x, y + 1, z);
+                if (block.getType() == Material.AIR) {
+                    block = chunk.getBlock(x, y, z);
+                    if (block.getType() == Material.AIR) {
+                        return new Vector3D(spawn.x, y == (int)spawn.y ? spawn.y : (double)y, spawn.z);
+                    }
+                } else {
+                    ++y;
+                }
+            }
+
+            v.y = y;
+        }
+
+        return new Vector3D(spawn.x, v.y, spawn.z);
+    }
+
 
 
 }

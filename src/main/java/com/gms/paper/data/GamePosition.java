@@ -3,6 +3,7 @@ package com.gms.paper.data;
 import com.gms.paper.util.Vector3D;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import org.bukkit.block.Block;
 
 public class GamePosition extends Vector3D {
     public boolean absolute = false;
@@ -51,6 +52,10 @@ public class GamePosition extends Vector3D {
     @Override
     public String toString() {
         return String.format("%d, %d, %d [world = %s]", (int)x, (int)y, (int)z, absolute ? "true" : "false");
+    }
+
+    public GamePosition(GamePosition prevPos, Block b) {
+        this(prevPos, new Vector3D(b.getX(), b.getY(), b.getZ()));
     }
 
     public GamePosition(GamePosition prevPos, Vector3D v) {

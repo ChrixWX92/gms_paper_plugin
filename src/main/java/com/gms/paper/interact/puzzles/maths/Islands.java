@@ -8,7 +8,9 @@ import com.gms.mc.custom.sound.*;
 import com.gms.mc.error.InvalidFrameWriteException;
 import com.gms.mc.interact.puzzles.maths.threads.FindFrames;
 import com.gms.mc.util.Log;
+import com.gms.paper.error.InvalidFrameWriteException;
 import io.netty.util.internal.ThreadLocalRandom;
+import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;

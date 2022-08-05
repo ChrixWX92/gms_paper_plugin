@@ -14,6 +14,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import com.gms.mc.custom.sound.*;
 import com.gms.mc.data.GamePosition;
 import com.gms.mc.error.InvalidFrameWriteException;
+import com.gms.paper.error.InvalidFrameWriteException;
 import io.netty.util.internal.ThreadLocalRandom;
 import nukkitcoders.mobplugin.entities.animal.flying.Bat;
 import nukkitcoders.mobplugin.entities.animal.flying.Bee;
@@ -22,6 +23,7 @@ import nukkitcoders.mobplugin.entities.animal.jumping.Rabbit;
 import nukkitcoders.mobplugin.entities.animal.swimming.*;
 import nukkitcoders.mobplugin.entities.animal.walking.*;
 import nukkitcoders.mobplugin.entities.monster.walking.*;
+import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.HashSet;

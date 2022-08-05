@@ -1,9 +1,5 @@
 package com.gms.paper.events;
 
-import cn.nukkit.event.EventHandler;
-import cn.nukkit.event.EventPriority;
-import cn.nukkit.event.Listener;
-import cn.nukkit.event.player.*;
 import com.gms.paper.interact.puzzles.ResetPuzzles;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

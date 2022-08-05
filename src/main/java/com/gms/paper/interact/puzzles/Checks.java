@@ -27,6 +27,8 @@ import com.gms.mc.util.HologramHelper;
 import com.gms.mc.util.Log;
 import gt.creeperface.holograms.Hologram;
 import gt.creeperface.holograms.entity.HologramEntity;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import javax.imageio.ImageIO;
@@ -63,12 +65,12 @@ public class Checks {
      * @param facing The cardinal direction of the puzzle (single character), specified by the player
      * @param columns
      * @param rows
-     * @throws InvalidFrameWriteException
+     * @throws //InvalidFrameWriteException
      * @throws InterruptedException
      */
     public static void generateChecks(Player p, Location buttonLoc, String facing, HashMap<Integer, String> columns, HashMap<Integer, String> rows, int apothem) throws Exception {
 
-        Level level = p.getLevel();
+        World world = p.getWorld();
         Location base = new Location();
         boolean alternator = false;
         BlockPlanks block = new BlockPlanks();
@@ -101,7 +103,7 @@ public class Checks {
                         throw new IllegalStateException("Unexpected value: " + facing);
                     }
                 }
-                level.setBlock(place,block);
+                world.setBlock(place,block);
             }
 
             // Locations for holograms
@@ -146,7 +148,7 @@ public class Checks {
             }
             //Placing column tops
             columnTop = columnBase.add(0,rows.size()+1);
-            level.setBlock(columnTop,new BlockWood());
+            world.setBlock(columnTop,new BlockWood());
             // Setting column signs
             BlockWallSign sign = new BlockWallSign();
             Vector3 columnSignLoc;
@@ -175,11 +177,11 @@ public class Checks {
                 default -> throw new IllegalStateException("Unexpected value: " + facing);
             }
 
-            level.setBlock(columnSignLoc, sign, true, true);
+            world.setBlock(columnSignLoc, sign, true, true);
 
-            Arithmetic.setCachedTag(setSign(new BlockEntitySign(p.getChunk(), BlockEntityItemFrame.getDefaultCompound(level.getBlock(columnSignLoc),"Sign")), level.getBlock(columnSignLoc), BackendUtils.getQuestionSetID(), column));
+            Arithmetic.setCachedTag(setSign(new BlockEntitySign(p.getChunk(), BlockEntityItemFrame.getDefaultCompound(world.getBlock(columnSignLoc),"Sign")), world.getBlock(columnSignLoc), BackendUtils.getQuestionSetID(), column));
             for (int i = 0 ; i < 10 ; i++){
-            AddPillarObjects apo = new AddPillarObjects(level, columnTop, sign, facingInt, 0, false);
+            AddPillarObjects apo = new AddPillarObjects(world, columnTop, sign, facingInt, 0, false);
             apo.start();
             apo.join();
             }
@@ -197,14 +199,14 @@ public class Checks {
             case "W" -> facingInt = 1;
             default -> throw new IllegalStateException("Unexpected value: " + facing);
         }
-        List<BlockEntityItemFrame> checksFrames = Arithmetic.applyItemFrames(level, columnLocs, facingInt, "Checks", rows.size(), false);
+        List<BlockEntityItemFrame> checksFrames = Arithmetic.applyItemFrames(world, columnLocs, facingInt, "Checks", rows.size(), false);
 
         for (BlockEntityItemFrame frame : checksFrames)
         {setFrame(frame, holograms, BackendUtils.getQuestionSetID());}
 
         //Arithmetic.writeFrame(frame,0, 4, true); TODO: Will need to populate submit sign with this
 
-        AnchorHandler.placeAnchor(p, level, buttonLoc, apothem, facing);
+        AnchorHandler.placeAnchor(p, world, buttonLoc, apothem, facing);
 
         BackendUtils.setPuzzleType(CHECKS);
         Log.logGeneric(p, TextFormat.AQUA + "CHECKS " + TextFormat.GREEN + "puzzle successfully generated.");

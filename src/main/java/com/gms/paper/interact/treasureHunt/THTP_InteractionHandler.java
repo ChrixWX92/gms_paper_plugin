@@ -81,7 +81,7 @@ public class THTP_InteractionHandler extends StaticWordList_InteractionHandler {
         /// start the question
         startQuestion();
 
-        teleportPlayer(player, spawnPosWorld);
+        teleportPlayerLocal(player, spawnPosWorld);
 
         this.setupQuestion(signLoc);
     }
@@ -104,7 +104,7 @@ public class THTP_InteractionHandler extends StaticWordList_InteractionHandler {
             Helper.setPlayerTitle(player, "§2You've found all\nthe words!\nWell done");
 
             /// Teleport the player to the target
-            teleportPlayer(player, targetPos, null);
+            teleportPlayerLocal(player, targetPos, null);
         }
     }
 }

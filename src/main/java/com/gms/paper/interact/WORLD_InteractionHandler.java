@@ -1,7 +1,7 @@
 package com.gms.paper.interact;
 
-import cn.nukkit.event.player.PlayerInteractEvent;
 import com.gms.paper.util.Helper;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 public class WORLD_InteractionHandler extends InteractionHandler {
     @Override

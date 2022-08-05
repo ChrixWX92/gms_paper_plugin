@@ -1,6 +1,9 @@
 package com.gms.paper.interact.mcq;
 
 import com.gms.paper.util.Vector3D;
+import com.gms.paper.util.blocks.GSSign;
+import com.gms.paper.util.world.GSWorld;
+import net.minecraft.world.level.block.entity.TileEntitySign;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -120,14 +123,16 @@ public class MCQ_PresentationHandler {
         populateExtraPrompt(question, questionDisplayLocation);
 
         //show progress hologram
-        interactionHandler.showQuestionSetProgress(questionDisplayLocation);
+        Vector3D vector3D = new Vector3D(questionDisplayLocation.getX(), questionDisplayLocation.getY(), questionDisplayLocation.getZ());
+        interactionHandler.showQuestionSetProgress(vector3D);
     }
 
     private Location[] sortSignLocations(List<Location> signLocations) {
         Location[] sortedSignLocations = new Location[signLocations.size()];
 
-        for (var signLocation : signLocations) {
-            BlockEntitySign sign = (BlockEntitySign) world.getBlockEntity(signLocation);
+        for (Location signLocation : signLocations) {
+            GSWorld gsWorld = new GSWorld(world);
+            GSSign sign = new GSSign((TileEntitySign) gsWorld.getBlockEntity(signLocation));
             String[] signText = interactionHandler.getSignInfo(sign);
 
             String signIndexText = signText[2];

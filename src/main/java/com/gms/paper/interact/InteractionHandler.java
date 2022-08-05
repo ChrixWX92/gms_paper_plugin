@@ -3,6 +3,7 @@ package com.gms.paper.interact;
 import com.gms.paper.util.*;
 import com.gms.paper.util.blocks.GSSign;
 import com.gms.paper.util.world.GSWorld;
+import net.minecraft.world.level.block.entity.TileEntity;
 import net.minecraft.world.level.block.entity.TileEntitySign;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -178,7 +179,7 @@ public class InteractionHandler {
 
     }
 
-    public static String[] getSignInfo(BlockEntitySign blockEntitySign) {
+    public static String[] getSignInfo(GSSign blockEntitySign) {
         try {
             String[] signText = blockEntitySign.getText();
 
@@ -299,25 +300,26 @@ public class InteractionHandler {
 
     protected GamePosition targetPos;
 
-    protected GamePosition teleportPlayer(Player player, GamePosition location, InteractionHandler pendingHandler) {
+    protected GamePosition teleportPlayerLocal(Player player, GamePosition location, InteractionHandler pendingHandler) {
         //save checkpoint
         saveCheckpoint();
 
         s_pendingTeleport = pendingHandler;
-        return teleportPlayer(player, location);
+        return teleportPlayerLocal(player, location);
     }
 
-    protected GamePosition teleportPlayer(Player player, GamePosition location) {
-        Location tpLoc = new Location(location.getX(), location.getY(), location.getZ());
+    protected GamePosition teleportPlayerLocal(Player player, GamePosition location) {
+        Location tpLoc = new Location(player.getWorld(), location.getX(), location.getY(), location.getZ());
         Log.debug(String.format("Teleporting: %s ", location));
-        player.teleport(location);
+        player.teleport(tpLoc);
         return location;
     }
 
     protected GamePosition teleportPlayerPostQuestionSet(Player player, GamePosition location) {
+        Location tpLoc = new Location(player.getWorld(), location.getX(), location.getY(), location.getZ());
         Log.debug(String.format("Teleporting: %s ", location.toString()));
         s_pendingTeleport = null;
-        player.teleport(location);
+        player.teleport(tpLoc);
         saveCheckpoint();
         return location;
     }
@@ -360,10 +362,10 @@ public class InteractionHandler {
         action = event.getAction();
         player = event.getPlayer();
         buttonBlock = event.getClickedBlock();
-        blockLoc = new GamePosition(null, buttonBlock.getLocation(), true);
-        signLoc = new GamePosition(blockLoc, new Location(0, -2, 0), false); /// buttonBlock.getLocation().add(new Location(0, -2, 0)); //info sign
+        blockLoc = new GamePosition(null, new Vector3D(buttonBlock.getX(), buttonBlock.getY(), buttonBlock.getZ()), true);
+        signLoc = new GamePosition(blockLoc, new Vector3D(0, -2, 0), false); /// buttonBlock.getLocation().add(new Location(0, -2, 0)); //info sign
         world = buttonBlock.getWorld();
-        signBlock = world.getBlock(signLoc);
+        signBlock = world.getBlockAt(new Location(world, signLoc.x, signLoc.y, signLoc.z));
 
         signText = getSignInfo(world, signLoc);
         buttonType = signText[0].split(",")[0]; //Where the button/activity type is stored
@@ -390,8 +392,9 @@ public class InteractionHandler {
     }
 
     public boolean isCorrectAnswer() {
-        Block answerBlock = world.getBlock(signLoc.add(s_answerBlockOffset));
-        return answerBlock.getName().equals(s_answerBlockName);
+        GamePosition offsetLoc = signLoc.add(s_answerBlockOffset);
+        Block answerBlock = world.getBlockAt(new Location(world, offsetLoc.x, offsetLoc.y, offsetLoc.z));
+        return answerBlock.getType().name().equals(s_answerBlockName);
     }
 
     public void setupQuestion(GamePosition questionLocation) throws InvalidBackendQueryException, IOException {
@@ -413,7 +416,9 @@ public class InteractionHandler {
         }
 
         //get correct hologram offset based on sign facing position
-        BlockFace facing =  EntityDirectionHelper.getSignFacingDirection((BlockEntitySign) world.getBlockEntity(questionLocation));
+        GSWorld gsWorld = new GSWorld(world);
+        GSSign gsSign = new GSSign((TileEntitySign) gsWorld.getBlockEntity(questionLocation));
+        BlockFace facing =  EntityDirectionHelper.getSignFacingDirection(gsSign);
         Vector3D holoLocation = questionLocation;
         switch(facing){
             case NORTH -> holoLocation = questionLocation.add(0.5, 1, 1);

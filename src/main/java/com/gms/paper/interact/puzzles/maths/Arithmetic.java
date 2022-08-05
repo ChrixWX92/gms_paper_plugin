@@ -1365,6 +1365,10 @@ public class Arithmetic {
         Pillars.setPillarsColour(-1);
     }
 
+    public static double clamp(double value, double min, double max) {
+        return value < min ? min : (Math.min(value, max));
+    }
+
     public static ArrayList<String> getFacings() {
         return Arithmetic.facings;
     }

@@ -1,7 +1,5 @@
 package com.gms.paper.data;
 
-import cn.nukkit.command.CommandSender;
-import cn.nukkit.math.Vector3;
 import com.gms.paper.Main;
 import com.gms.paper.interact.puzzles.handlers.anchors.AnchorHandler;
 import com.gms.paper.util.Helper;

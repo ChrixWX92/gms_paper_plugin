@@ -6,6 +6,8 @@ import com.gms.paper.interact.puzzles.BackendUtils;
 import com.gms.paper.interact.puzzles.MobGroup;
 import com.gms.paper.interact.puzzles.maths.Arithmetic;
 import com.gms.paper.util.Log;
+import com.gms.paper.util.TextFormat;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.io.IOException;

@@ -1,19 +1,15 @@
 package com.gms.paper.interact.puzzles.maths;
 
-import cn.nukkit.Player;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAir;
-import cn.nukkit.block.BlockWaterStill;
-import cn.nukkit.level.Location;
-import cn.nukkit.utils.TextFormat;
-import com.gms.mc.custom.particles.ParticleFX;
-import com.gms.mc.custom.particles.ParticleFXSequence;
-import com.gms.mc.custom.sound.MusicMaker;
-import com.gms.mc.custom.sound.SFX;
-import com.gms.mc.error.InvalidFrameWriteException;
-import com.gms.mc.interact.puzzles.maths.threads.FindFrames;
-import com.gms.mc.util.Log;
+import com.gms.paper.custom.particles.ParticleFX;
+import com.gms.paper.custom.particles.ParticleFXSequence;
+import com.gms.paper.custom.sound.MusicMaker;
+import com.gms.paper.custom.sound.SFX;
+import com.gms.paper.error.InvalidFrameWriteException;
+import com.gms.paper.interact.puzzles.maths.threads.FindFrames;
+import com.gms.paper.util.Log;
 import io.netty.util.internal.ThreadLocalRandom;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.HashSet;

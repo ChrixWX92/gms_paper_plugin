@@ -21,7 +21,7 @@ public class TPT_InteractionHandler extends InteractionHandler {
 
             GamePosition spawnPos = Helper.parseLocation(signText[2]);
             GamePosition spawnPosWorld = signLoc.add(spawnPos);
-            teleportPlayer(player, spawnPosWorld);
+            teleportPlayerLocal(player, spawnPosWorld);
 
             Helper.setPlayerTitle(player, TextFormat.GREEN + "You have been\nteleported!");
             Log.logGeneric(player, "You now have " + profile.tickets + " tickets");

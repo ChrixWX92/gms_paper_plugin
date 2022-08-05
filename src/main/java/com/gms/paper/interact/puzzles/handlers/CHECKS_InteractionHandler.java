@@ -11,6 +11,14 @@ import com.gms.mc.interact.puzzles.BackendUtils;
 import com.gms.mc.interact.puzzles.Checks;
 import com.gms.mc.interact.puzzles.maths.Arithmetic;
 import com.gms.mc.util.Log;
+import com.gms.paper.error.InvalidBackendQueryException;
+import com.gms.paper.interact.puzzles.BackendUtils;
+import com.gms.paper.interact.puzzles.Checks;
+import com.gms.paper.util.Log;
+import com.gms.paper.util.TextFormat;
+import com.gms.paper.util.Vector3D;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -101,7 +109,7 @@ public class CHECKS_InteractionHandler extends PUZZLE_InteractionHandler {
                     }
 
                     try {
-                        Checks.generateChecks(event.getPlayer(), event.getBlock().getLocation(), facing.get(), columns, rows, apothem.get());
+                        Checks.generateChecks(event.getPlayer(), event.getClickedBlock().getLocation(), facing.get(), columns, rows, apothem.get());
                     } catch (Exception exception) {
                         exception.printStackTrace();
                     }
@@ -110,7 +118,7 @@ public class CHECKS_InteractionHandler extends PUZZLE_InteractionHandler {
 
     }
 
-    public static void fetchChecks(Player player, String questionSetID, String facing, Vector3 buttonLoc) {
+    public static void fetchChecks(Player player, String questionSetID, String facing, Vector3D buttonLoc) {
         HashMap<String, String> data;
         HashMap<Integer, String> columns = new HashMap<>();
         HashMap<Integer, String> rows = new HashMap<>();

@@ -1,22 +1,20 @@
 package com.gms.paper.interact.puzzles.maths;
 
-import cn.nukkit.Player;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAir;
-import cn.nukkit.math.Vector3;
-import com.gms.mc.custom.blocks.BlockGSAnvil;
-import com.gms.mc.error.InvalidFrameWriteException;
-import com.gms.mc.interact.puzzles.MathsPuzzle;
-import com.gms.mc.interact.puzzles.MathsTopic;
-import com.gms.mc.interact.puzzles.PuzzleType;
-import com.gms.mc.interact.puzzles.Resettable;
-import com.gms.mc.interact.puzzles.maths.threads.ClearAnvils;
-import com.gms.mc.interact.puzzles.maths.threads.ResetAnvils;
-import com.gms.mc.util.Log;
+import com.gms.paper.custom.blocks.BlockGSAnvil;
+import com.gms.paper.error.InvalidFrameWriteException;
+import com.gms.paper.interact.puzzles.MathsPuzzle;
+import com.gms.paper.interact.puzzles.MathsTopic;
+import com.gms.paper.interact.puzzles.PuzzleType;
+import com.gms.paper.interact.puzzles.Resettable;
+import com.gms.paper.interact.puzzles.maths.threads.ClearAnvils;
+import com.gms.paper.interact.puzzles.maths.threads.ResetAnvils;
+import com.gms.paper.util.Log;
+import com.gms.paper.util.Vector3D;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 
-import static cn.nukkit.level.Sound.CONDUIT_DEACTIVATE;
 
 public class Anvils extends MathsPuzzle implements Resettable {
 
@@ -44,8 +42,8 @@ public class Anvils extends MathsPuzzle implements Resettable {
      */
 
     Block block;
-    Vector3[] columns;
-    Vector3 answer;
+    Vector3D[] columns;
+    Vector3D answer;
 
     public Anvils(Player player, String id, MathsTopic topic) throws InvalidFrameWriteException, InterruptedException {
         super(player, PuzzleType.ANVILS, id, topic);

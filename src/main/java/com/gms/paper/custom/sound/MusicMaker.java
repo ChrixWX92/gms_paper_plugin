@@ -1,8 +1,8 @@
 package com.gms.paper.custom.sound;
 
-import cn.nukkit.Player;
-import cn.nukkit.level.Sound;
-import cn.nukkit.math.Vector3;
+import com.gms.paper.util.Vector3D;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 
 public class MusicMaker {
 
@@ -14,11 +14,11 @@ public class MusicMaker {
         playNote(p, n, instrument, 1F);
     }
     public static void playNote(Player p, Note n, Sound instrument, float volume){
-        p.getLevel().addSound(new Vector3(p.x,p.y,p.z), instrument, volume, n.getPitch());
+        p.getWorld().addSound(new Vector3D(p.x,p.y,p.z), instrument, volume, n.getPitch());
     }
     public static void playChord(Player p, Chord chord, Sound instrument){
         for (Note n : chord.getNotes()){
-            p.getLevel().addSound(new Vector3(p.x,p.y,p.z), instrument, 1F, n.getPitch());
+            p.getWorld().addSound(new Vector3D(p.x,p.y,p.z), instrument, 1F, n.getPitch());
         }
     }
     public static void playArpeggio(Player p, Chord chord, long speed, Sound instrument) {

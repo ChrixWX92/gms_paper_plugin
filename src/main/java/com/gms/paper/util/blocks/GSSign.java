@@ -5,8 +5,11 @@ import lombok.Getter;
 import net.kyori.adventure.text.TextComponent;
 import net.minecraft.world.level.block.entity.TileEntitySign;
 import org.bukkit.Location;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.Directional;
 import org.bukkit.craftbukkit.v1_19_R1.block.CraftBlock;
+import org.jetbrains.annotations.NotNull;
 
 public class GSSign {
 
@@ -20,22 +23,21 @@ public class GSSign {
     public Location location;
     @Getter
     public GSWorld gsWorld;
+    @Getter
+    public @NotNull BlockFace facing;
 
     public GSSign(Sign bukkitSign) {
         this.bukkitSign = bukkitSign;
-        this.location = bukkitSign.getLocation();
-        this.gsWorld = new GSWorld(this.location.getWorld());
+        this.populateFields();
 
         //TODO: GET NMS SIGN FROM BUKKIT ONE
 
-        this.text = extractText();
     }
 
     public GSSign(TileEntitySign nmsSign) {
         this.nmsSign = nmsSign;
         this.bukkitSign = (Sign) CraftBlock.at(nmsSign.k(), nmsSign.p()).getLocation();
-        this.location = this.bukkitSign.getLocation();
-        this.text = extractText();
+        this.populateFields();
     }
 
     private String[] extractText() {
@@ -47,5 +49,15 @@ public class GSSign {
         }
         return text;
     }
+
+    private void populateFields() {
+        this.location = this.bukkitSign.getLocation();
+        this.gsWorld = new GSWorld(this.location.getWorld());
+        this.text = extractText();
+        if (this.bukkitSign.getBlockData() instanceof Directional directional) {
+            this.facing = directional.getFacing();
+        }
+    }
+
 
 }

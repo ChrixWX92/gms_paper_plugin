@@ -18,7 +18,11 @@ import com.gms.mc.interact.puzzles.handlers.anchors.AnchorHandler;
 import com.gms.mc.interact.puzzles.maths.Arithmetic;
 import com.gms.mc.interact.puzzles.utils.TextToImage;
 import com.gms.mc.util.Log;
+import com.gms.paper.error.InvalidFrameWriteException;
+import com.gms.paper.interact.puzzles.maths.Arithmetic;
 import org.apache.commons.lang3.ArrayUtils;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.awt.*;
@@ -67,7 +71,7 @@ public class Assemble {
      */
     public static void generateAssemble(Player p, Location buttonLoc, String facing, HashMap<Integer, String> answers, HashMap<Integer, String> questions, HashMap<Integer, String> inventory, int apothem) throws InvalidFrameWriteException, InterruptedException {
 
-        Level level = p.getLevel();
+        World world = p.getLevel();
         Location base = new Location();
         BlockPlanks block = new BlockPlanks();
 
@@ -120,7 +124,7 @@ public class Assemble {
                         throw new IllegalStateException("Unexpected value: " + facing);
                     }
                 }
-                level.setBlock(place, block);
+                world.setBlock(place, block);
                 if (place.y == base.y) {
                     columnLocs[i - 1] = place.add(0, 0);
                 }
@@ -144,7 +148,7 @@ public class Assemble {
         ExecutorService es = Executors.newCachedThreadPool();
         es.execute(() -> {
             try {
-                newAssembleFrames.set(Arithmetic.applyItemFrames(level, finalColumnLocs, facingInt, "Assemble", 3, true, false, false));
+                newAssembleFrames.set(Arithmetic.applyItemFrames(world, finalColumnLocs, facingInt, "Assemble", 3, true, false, false));
             }
             catch (InterruptedException e) {
                 e.printStackTrace();
@@ -193,7 +197,7 @@ public class Assemble {
             }
         }.runTaskLater(Main.s_plugin, 1);
 
-        AnchorHandler.placeAnchor(p, level, buttonLoc, apothem, "");
+        AnchorHandler.placeAnchor(p, world, buttonLoc, apothem, "");
 
         BackendUtils.setPuzzleType(ASSEMBLE);
         Log.logGeneric(p, TextFormat.AQUA + "ASSEMBLE " + TextFormat.GREEN + "puzzle successfully generated.");

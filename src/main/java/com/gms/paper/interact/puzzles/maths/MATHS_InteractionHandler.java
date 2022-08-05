@@ -11,6 +11,7 @@ import com.gms.paper.interact.InteractionHandler;
 import com.gms.paper.interact.puzzles.*;
 import com.gms.paper.util.Log;
 import com.gms.paper.interact.puzzles.Resettable;
+import com.gms.paper.util.TextFormat;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;

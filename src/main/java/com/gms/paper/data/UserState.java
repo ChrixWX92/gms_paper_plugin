@@ -1,6 +1,5 @@
 package com.gms.paper.data;
 
-import cn.nukkit.math.Vector3;
 import com.gms.paper.Main;
 import com.gms.paper.interact.InteractionHandler;
 import com.gms.paper.util.Helper;
@@ -20,7 +19,7 @@ public class UserState {
     public static final String s_stateFilename = "state.json";
 
     private String worldId;
-    private Vector3D pos = new Vector3(Helper.s_mainLobbySpawnPos.x, Helper.s_mainLobbySpawnPos.y, Helper.s_mainLobbySpawnPos.z);
+    private Vector3D pos = new Vector3D(Helper.s_mainLobbySpawnPos.x, Helper.s_mainLobbySpawnPos.y, Helper.s_mainLobbySpawnPos.z);
     public float headYaw = 0;
     public String progressId = "";
 
@@ -82,9 +81,9 @@ public class UserState {
 
     public void loadInventory(User user) {
         File srcPath = new File(Paths.get(user.getProfile().getProfileDir().toString(), "players").toString());
-        File dstPath = new File(Paths.get(Main.s_plugin.getServer().getDataPath(), "players").toString());
+        File dstPath = new File(Paths.get(Main.s_plugin.getDataFolder().getPath(), "players").toString());
 
-        Log.debug(String.format("Loading inventory: %s => %s", srcPath.toString(), dstPath.toString()));
+        Log.debug(String.format("Loading inventory: %s => %s", srcPath, dstPath));
 
         if (!srcPath.exists())
             return;
@@ -93,10 +92,10 @@ public class UserState {
     }
 
     public void saveInventory(User user) {
-        File srcPath = new File(Paths.get(Main.s_plugin.getServer().getDataPath(), "players").toString());
+        File srcPath = new File(Paths.get(Main.s_plugin.getDataFolder().getPath(), "players").toString());
         File dstPath = new File(Paths.get(user.getProfile().getProfileDir().toString(), "players").toString());
 
-        Log.debug(String.format("Saving inventory: %s => %s", srcPath.toString(), dstPath.toString()));
+        Log.debug(String.format("Saving inventory: %s => %s", srcPath, dstPath));
 
         if (!srcPath.exists())
             return;
@@ -112,7 +111,7 @@ public class UserState {
             worldId = file.getName();
         }
 
-        Main.s_plugin.getServer().getConfig();
+        Main.s_plugin.getConfig();
     }
 
     public void updatePos(Vector3D pos, float headYaw) {

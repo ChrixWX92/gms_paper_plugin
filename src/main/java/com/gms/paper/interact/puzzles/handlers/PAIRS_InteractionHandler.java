@@ -1,20 +1,18 @@
 package com.gms.paper.interact.puzzles.handlers;
 
-import cn.nukkit.Player;
-import cn.nukkit.event.player.PlayerInteractEvent;
-import cn.nukkit.utils.TextFormat;
-import com.denzelcode.form.FormAPI;
-import com.denzelcode.form.window.CustomWindowForm;
-import com.gms.mc.data.Course;
-import com.gms.mc.data.GamePosition;
-import com.gms.mc.data.LessonProgress;
-import com.gms.mc.data.QuestionIdInfo;
-import com.gms.mc.error.InvalidBackendQueryException;
-import com.gms.mc.error.InvalidFrameWriteException;
-import com.gms.mc.interact.puzzles.BackendUtils;
-import com.gms.mc.interact.puzzles.Pairs;
-import com.gms.mc.interact.puzzles.maths.Arithmetic;
-import com.gms.mc.util.Log;
+import com.gms.paper.data.Course;
+import com.gms.paper.data.GamePosition;
+import com.gms.paper.data.LessonProgress;
+import com.gms.paper.data.QuestionIdInfo;
+import com.gms.paper.error.InvalidBackendQueryException;
+import com.gms.paper.error.InvalidFrameWriteException;
+import com.gms.paper.interact.puzzles.BackendUtils;
+import com.gms.paper.interact.puzzles.Pairs;
+import com.gms.paper.interact.puzzles.maths.Arithmetic;
+import com.gms.paper.util.Log;
+import com.gms.paper.util.TextFormat;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -99,7 +97,7 @@ public class PAIRS_InteractionHandler extends PUZZLE_InteractionHandler {
                 }
 
                 try {
-                    Pairs.generatePairs(event.getPlayer(), event.getBlock().getLocation(), facing.get(), answers, apothem.get());
+                    Pairs.generatePairs(event.getPlayer(), event.getClickedBlock().getLocation(), facing.get(), answers, apothem.get());
                 } catch (InvalidFrameWriteException | InterruptedException exception) {
                     exception.printStackTrace();
                 }

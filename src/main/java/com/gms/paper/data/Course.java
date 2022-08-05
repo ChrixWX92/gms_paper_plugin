@@ -1,9 +1,9 @@
 package com.gms.paper.data;
 
-import cn.nukkit.command.CommandSender;
-import cn.nukkit.math.Vector3;
+import com.gms.paper.util.Vector3D;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Date;
@@ -73,12 +73,12 @@ public class Course extends GenericContent {
         return qset;
     }
 
-    public Question getQuestion(CommandSender sender, QuestionIdInfo idInfo, int progressLevel) {
-        QuestionSet qset = getQuestionSet(sender, idInfo);
+    public Question getQuestion(Player player, QuestionIdInfo idInfo, int progressLevel) {
+        QuestionSet qset = getQuestionSet(player, idInfo);
         if (qset == null)
             return null;
 
-        return qset.getQuestion(sender, idInfo, progressLevel);
+        return qset.getQuestion(player, idInfo, progressLevel);
     }
 
     public Course cache() {

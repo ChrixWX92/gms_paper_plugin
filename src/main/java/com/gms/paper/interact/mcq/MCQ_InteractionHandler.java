@@ -110,7 +110,7 @@ public class MCQ_InteractionHandler  extends InteractionHandler{
 
         Log.debug(String.format("TPQS Lesson Id: %s [Teleport: %s, Target: %s]", progress.contentId, questionPos, targetPos));
 
-        teleportPlayer(player, questionPos, prev);
+        teleportPlayerLocal(player, questionPos, prev);
     }
 
     @Override

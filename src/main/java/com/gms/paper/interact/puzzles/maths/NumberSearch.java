@@ -1,20 +1,13 @@
 package com.gms.paper.interact.puzzles.maths;
 
-import cn.nukkit.Player;
-import cn.nukkit.blockentity.BlockEntityItemFrame;
-import cn.nukkit.level.particle.BoneMealParticle;
-import cn.nukkit.level.particle.SporeParticle;
-import cn.nukkit.math.Vector3;
-import cn.nukkit.scheduler.NukkitRunnable;
-import cn.nukkit.utils.TextFormat;
-import com.gms.mc.Main;
-import com.gms.mc.custom.sound.*;
-import com.gms.mc.error.InvalidFrameWriteException;
-import com.gms.mc.interact.puzzles.MathsPuzzle;
-import com.gms.mc.interact.puzzles.MathsTopic;
-import com.gms.mc.interact.puzzles.PuzzleType;
-import com.gms.mc.interact.puzzles.Resettable;
-import com.gms.mc.util.Log;
+import com.gms.paper.Main;
+import com.gms.paper.custom.sound.*;
+import com.gms.paper.error.InvalidFrameWriteException;
+import com.gms.paper.interact.puzzles.MathsPuzzle;
+import com.gms.paper.interact.puzzles.MathsTopic;
+import com.gms.paper.interact.puzzles.PuzzleType;
+import com.gms.paper.interact.puzzles.Resettable;
+import com.gms.paper.util.Log;
 import io.netty.util.internal.ThreadLocalRandom;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -23,10 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static cn.nukkit.level.ParticleEffect.CAMERA_SHOOT_EXPLOSION;
-import static cn.nukkit.level.Sound.NOTE_HARP;
-import static cn.nukkit.level.Sound.PLACE_LARGE_AMETHYST_BUD;
 
 public class NumberSearch extends MathsPuzzle implements Resettable {
 

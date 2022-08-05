@@ -1,30 +1,18 @@
 package com.gms.paper.interact.puzzles.maths;
 
-import cn.nukkit.Player;
-import cn.nukkit.blockentity.BlockEntityItemFrame;
-import cn.nukkit.item.*;
-import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import com.gms.mc.custom.sound.MusicMaker;
-import com.gms.mc.custom.sound.SFX;
-import com.gms.mc.error.InvalidFrameWriteException;
-import com.gms.mc.interact.puzzles.*;
-import com.gms.mc.util.Log;
+import com.gms.paper.custom.sound.MusicMaker;
+import com.gms.paper.custom.sound.SFX;
+import com.gms.paper.error.InvalidFrameWriteException;
+import com.gms.paper.interact.puzzles.*;
+import com.gms.paper.util.Log;
+import com.gms.paper.interact.puzzles.MathsPuzzle;
+import com.gms.paper.interact.puzzles.Resettable;
 import io.netty.util.internal.ThreadLocalRandom;
+import org.bukkit.entity.Player;
 
 import java.util.*;
 
-import static cn.nukkit.item.ItemID.*;
-import static cn.nukkit.item.ItemID.COAL;
-import static cn.nukkit.item.ItemID.DIAMOND;
-import static cn.nukkit.item.ItemID.EMERALD;
-import static cn.nukkit.level.ParticleEffect.*;
-import static cn.nukkit.level.ParticleEffect.CAMERA_SHOOT_EXPLOSION;
-import static cn.nukkit.level.ParticleEffect.SOUL;
-import static cn.nukkit.level.ParticleEffect.VILLAGER_HAPPY;
-import static cn.nukkit.level.ParticleEffect.WITHER_BOSS_INVULNERABLE;
-import static com.gms.mc.interact.puzzles.MathsTopic.*;
-import static com.gms.mc.interact.puzzles.MathsTopic.SUBTRACTION;
+import static com.gms.paper.interact.puzzles.MathsTopic.SUBTRACTION;
 
 public class Grid extends MathsPuzzle implements Resettable {
     /**
