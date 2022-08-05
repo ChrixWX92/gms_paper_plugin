@@ -7,6 +7,7 @@ import net.minecraft.server.network.PlayerConnection;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import com.gms.paper.Main;
@@ -45,8 +46,8 @@ public class TeleportHandler implements Listener {
     public void tpWorld(Player player, String worldName, Vector3D spawnCoordinates, float headYaw, String worldId) {
         try {
 
-            if (!this.getPlugin().getServer().isLevelLoaded(worldName)) {
-                boolean didLoad = this.getPlugin().getServer().loadLevel(worldName);
+            if (this.getPlugin().getServer().getWorld(worldName) == null) {
+                boolean didLoad = this.getPlugin().getServer().createWorld(wc);
                 if (!didLoad)
                     Log.error(String.format("Unable to load world: %s", worldName));
             }

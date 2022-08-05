@@ -1,11 +1,11 @@
 package com.gms.paper.interact;
 
-import cn.nukkit.event.player.PlayerInteractEvent;
 import com.gms.paper.util.TextFormat;
 import com.gms.paper.data.GamePosition;
 import com.gms.paper.error.InvalidBackendQueryException;
 import com.gms.paper.util.Helper;
 import com.gms.paper.util.Log;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.io.IOException;
 

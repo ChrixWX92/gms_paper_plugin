@@ -27,6 +27,7 @@ import com.gms.mc.util.HologramHelper;
 import com.gms.mc.util.Log;
 import gt.creeperface.holograms.Hologram;
 import gt.creeperface.holograms.entity.HologramEntity;
+import org.bukkit.entity.Player;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

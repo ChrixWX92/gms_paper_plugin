@@ -19,6 +19,7 @@ import com.gms.mc.interact.puzzles.maths.Arithmetic;
 import com.gms.mc.interact.puzzles.utils.TextToImage;
 import com.gms.mc.util.Log;
 import org.apache.commons.lang3.ArrayUtils;
+import org.bukkit.entity.Player;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

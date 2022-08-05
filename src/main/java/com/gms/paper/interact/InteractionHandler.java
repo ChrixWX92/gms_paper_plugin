@@ -3,6 +3,7 @@ package com.gms.paper.interact;
 import com.gms.paper.util.*;
 import com.gms.paper.util.blocks.GSSign;
 import com.gms.paper.util.world.GSWorld;
+import net.minecraft.world.level.block.entity.TileEntitySign;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -21,6 +22,7 @@ import com.gms.paper.interact.tpqs.TPQS_InteractionHandler;
 import com.gms.paper.interact.treasureHunt.THA_InteractionHandler;
 import com.gms.paper.interact.treasureHunt.THTP_InteractionHandler;
 import com.gms.paper.interact.puzzles.PuzzleType;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -72,7 +74,7 @@ public class InteractionHandler {
     public static Vector3D s_blockSignOffset = new Vector3D(0, -2, 0);
     public static String s_answerMarker = "§3";
     public static String s_answerBlockName = Material.GOLD_BLOCK.name();
-    public static String s_stoneButtonName = "Stone Button";
+    public static String s_stoneButtonName = Material.STONE_BUTTON.name();
     public static String s_woodenButtonName = "Wooden Button";
 
     public static void handleInteraction(World world, PlayerInteractEvent event, String buttonType) throws IOException, InvalidBackendQueryException {
@@ -151,29 +153,29 @@ public class InteractionHandler {
     }
 
     public static String[] getSignInfo(World world, GamePosition signLocation) {
-        try {
 
-            GSWorld gsWorld = new GSWorld(world);
+        GSWorld gsWorld = new GSWorld(world);
+        GSSign blockEntitySign;
 
-            GSSign blockEntitySign = world.getBlockEntity(signLocation.round());
-
-            if (blockEntitySign == null) {
-                GamePosition signLocMCQ = new GamePosition(signLocation, new Location(0, -1, 0), false); // sign can be 3 blocks down for MCQ
-                blockEntitySign = (BlockEntitySign) world.getBlockEntity(signLocMCQ.round());
-            }
-
-            String[] signText = blockEntitySign.getText();
-
-            //Java adds in black formatting which messes up everything so get rid of it here
-            for (int i = 0; i < signText.length; i++) {
-                signText[i] = signText[i].replaceAll("§0", "");
-            }
-
-            return signText;
+        if (gsWorld.getBlockEntity(signLocation.round()) instanceof TileEntitySign sign) {
+            blockEntitySign = new GSSign(sign);
         }
-        catch (Exception e) {
+        else if (gsWorld.getBlockEntity(new GamePosition(signLocation, new Vector3D(0, -1, 0), false)) instanceof TileEntitySign sign) { // sign can be 3 blocks down for MCQ
+            blockEntitySign = new GSSign(sign);
+        } else {
+            Log.error("Unable to find TileEntitySign at " + signLocation.round());
             return null;
         }
+
+        String[] signText = blockEntitySign.getText();
+
+        //Java adds in black formatting which messes up everything so get rid of it here
+        for (int i = 0; i < signText.length; i++) {
+            signText[i] = signText[i].replaceAll("§0", "");
+        }
+
+        return signText;
+
     }
 
     public static String[] getSignInfo(BlockEntitySign blockEntitySign) {
@@ -270,7 +272,7 @@ public class InteractionHandler {
     
     ////////////////////////////////////////////////////////////////////////////////////
     protected PlayerInteractEvent event;
-    protected PlayerInteractEvent.Action action;
+    protected @NotNull Action action;
     protected Player player;
     protected Block buttonBlock;
     protected GamePosition blockLoc;
@@ -306,7 +308,8 @@ public class InteractionHandler {
     }
 
     protected GamePosition teleportPlayer(Player player, GamePosition location) {
-        Log.debug(String.format("Teleporting: %s ", location.toString()));
+        Location tpLoc = new Location(location.getX(), location.getY(), location.getZ());
+        Log.debug(String.format("Teleporting: %s ", location));
         player.teleport(location);
         return location;
     }
@@ -356,10 +359,10 @@ public class InteractionHandler {
     public void initHandleInfo(PlayerInteractEvent event) {
         action = event.getAction();
         player = event.getPlayer();
-        buttonBlock = event.getBlock();
+        buttonBlock = event.getClickedBlock();
         blockLoc = new GamePosition(null, buttonBlock.getLocation(), true);
         signLoc = new GamePosition(blockLoc, new Location(0, -2, 0), false); /// buttonBlock.getLocation().add(new Location(0, -2, 0)); //info sign
-        world = buttonBlock.getLocation().level;
+        world = buttonBlock.getWorld();
         signBlock = world.getBlock(signLoc);
 
         signText = getSignInfo(world, signLoc);
